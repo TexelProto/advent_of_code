@@ -1,16 +1,20 @@
-use std::{fmt::Display, io::stderr, path::PathBuf, time::Duration};
+use std::{fmt::Display, io::stderr, path::PathBuf};
 
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use crossterm::{
     event::{Event, KeyCode, KeyEventKind},
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen},
 };
+use tui::buffer::Buffer;
+use tui::layout::Rect;
 use tui::{
     backend::{Backend, CrosstermBackend},
-    style::{Color, Style},
     widgets::{Block, BorderType, List, ListItem, ListState},
     Terminal,
 };
+
+use tui::widgets::{Borders, StatefulWidget, Widget};
 
 crate::error_wrapper! {
     Error {
@@ -18,73 +22,98 @@ crate::error_wrapper! {
     }
 }
 
-fn handle_list_events(state: &mut ListState, max: usize) -> Result<Option<usize>, Error> {
-    while crossterm::event::poll(Duration::from_secs(1))? {
-        let key = match crossterm::event::read()? {
-            Event::Key(key) => key,
-            _ => continue,
-        };
-        if key.kind != KeyEventKind::Press {
-            continue;
-        }
-        match key.code {
-            KeyCode::Up => {
-                let mut selected = state.selected().unwrap_or(0);
-                selected += 1;
-                if selected >= max {
-                    selected = max - 1;
+struct StatefulList<'a, T> {
+    title: &'a str,
+    state: ListState,
+    items: Vec<T>,
+}
+
+impl<T> StatefulList<'_, T> {
+    fn next(&mut self) {
+        let i = match self.state.selected() {
+            Some(i) => {
+                if i >= self.items.len() - 1 {
+                    0
+                } else {
+                    i + 1
                 }
-                state.select(Some(selected));
             }
-            KeyCode::Down => {
-                let mut selected = state.selected().unwrap_or(0);
-                selected = selected.saturating_sub(1);
-                state.select(Some(selected));
+            None => 0,
+        };
+        self.state.select(Some(i));
+    }
+
+    fn previous(&mut self) {
+        let i = match self.state.selected() {
+            Some(i) => {
+                if i == 0 {
+                    self.items.len() - 1
+                } else {
+                    i - 1
+                }
             }
-            KeyCode::Enter => {
-                return Ok(state.selected());
-            }
-            _ => {}
-        }
+            None => 0,
+        };
+        self.state.select(Some(i));
+    }
+}
+
+impl<T: Display> Widget for &mut StatefulList<'_, T> {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let items = self
+            .items
+            .iter()
+            .map(|t| ListItem::new(format!("{}", t)))
+            .collect::<Vec<_>>();
+        let list = List::new(items)
+            .block(
+                Block::default()
+                    .title(self.title)
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded),
+            )
+            .highlight_symbol(" >> ");
+        StatefulWidget::render(list, area, buf, &mut self.state);
+    }
+}
+
+fn handle_list_events<T>(list: &mut StatefulList<T>) -> Result<Option<usize>, Error> {
+    let key = match crossterm::event::read()? {
+        Event::Key(key) => key,
+        _ => return Ok(None),
+    };
+    if key.kind != KeyEventKind::Press {
+        return Ok(None);
+    }
+    match key.code {
+        KeyCode::Up => list.previous(),
+        KeyCode::Down => list.next(),
+        KeyCode::Enter => return Ok(list.state.selected()),
+        _ => {}
     }
     Ok(None)
 }
 
 fn select<B, T, I>(title: &str, term: &mut Terminal<B>, iter: I) -> Result<T, Error>
 where
-    B: tui::backend::Backend,
+    B: Backend,
     T: Display,
     I: IntoIterator<Item = T>,
 {
-    let mut vec = iter.into_iter().collect::<Vec<_>>();
-    let mut i = 0;
-
-    let list_items = vec
-        .iter()
-        .map(|t| {
-            let text = format!("{}", t);
-            ListItem::new(text)
-        })
-        .collect::<Vec<_>>();
-
-    let mut list_state = ListState::default();
-    list_state.select(Some(1));
-    let list = List::new(list_items)
-        .highlight_symbol(">>")
-        .block(Block::default().title(title).border_type(BorderType::Plain));
+    let mut list = StatefulList {
+        title,
+        items: iter.into_iter().collect::<Vec<_>>(),
+        state: ListState::default(),
+    };
 
     let value = loop {
         term.draw(|f| {
-            let list = list.clone();
             let area = f.size();
-            f.render_stateful_widget(list, area, &mut list_state);
+            f.render_widget(&mut list, area);
         })?;
 
-        println!("{}", i);
-        i += 1;
-
-        if let Some(i) = handle_list_events(&mut list_state, vec.len())? {
-            break vec.drain(i..=i).next().unwrap();
+        if let Some(i) = handle_list_events(&mut list)? {
+            break list.items.drain(i..=i).next().unwrap();
         }
     };
     Ok(value)
@@ -95,6 +124,7 @@ where
     B: Backend,
 {
     let mut current_dir = std::env::current_dir()?;
+    current_dir.push("inputs");
     let backtrack = "..".to_string();
 
     loop {
@@ -115,6 +145,7 @@ where
 }
 
 pub fn run() -> Result<(), Error> {
+    enable_raw_mode()?;
     execute!(stderr(), EnterAlternateScreen)?;
 
     let backend = CrosstermBackend::new(stderr());
@@ -127,9 +158,13 @@ pub fn run() -> Result<(), Error> {
     let input = select_file(&mut terminal)?;
     let input = std::fs::read_to_string(input)?;
 
+    execute!(stderr(), LeaveAlternateScreen)?;
+    disable_raw_mode()?;
+
     task.run(input);
 
-    execute!(stderr(), LeaveAlternateScreen)?;
+    println!("Press enter to exit...");
+    std::io::stdin().read_line(&mut String::new())?;
 
     Ok(())
 }

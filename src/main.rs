@@ -12,7 +12,7 @@ mod runner {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use clap::{arg, command, Command};
+    use clap::{command, Command};
     let matches = command!()
         .subcommand(
             Command::new("tui")
