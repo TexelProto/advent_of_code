@@ -1,6 +1,7 @@
 #![deny(private_in_public)]
 
 use std::{error::Error, path::PathBuf};
+use std::borrow::Cow;
 
 use clap::{value_parser, Arg};
 
@@ -50,10 +51,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let year = run.get_one::<String>("year").unwrap();
         let day = run.get_one::<String>("day").unwrap();
         let task = run.get_one::<String>("task").unwrap();
-        let input = run.get_one::<PathBuf>("input").unwrap();
+        let input = match run.get_one::<PathBuf>("input") {
+            None => {
+                let mut path = PathBuf::from_iter(["inputs", year, day]);
+                path.set_extension("txt");
+                Cow::Owned(path)
+            }
+            Some(path) => Cow::Borrowed(path)
+        };
         let output = run.get_one::<PathBuf>("output");
         let output_path = output.map(|p| p.as_path());
-        runner::run::run(year, day, task, input, output_path).map_err(box_error)
+        runner::run::run(year, day, task, &input, output_path).map_err(box_error)
     } else {
         runner::cli::run().map_err(box_error)
     }

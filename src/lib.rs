@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::io::BufRead;
 
 #[derive(Debug)]
 pub struct Year {
@@ -71,7 +72,10 @@ macro_rules! decl_years {
     (
         $($year:ident {
             $($day:ident {
-                $($task:ident;)*
+                $(
+                    $(#[$attr:ident])*
+                    $task:ident;
+                )*
             })*
         })*
     ) => {
@@ -100,6 +104,20 @@ macro_rules! decl_years {
     };
 }
 
+trait Input: Sized {
+    type Error: std::error::Error;
+    fn parse(read: impl BufRead) -> Result<Self, Self::Error>;
+}
+
+impl Input for String {
+    type Error = std::io::Error;
+    fn parse(mut read: impl BufRead) -> Result<Self, Self::Error> {
+        let mut s = String::new();
+        read.read_to_string(&mut s)?;
+        Ok(s)
+    }
+}
+
 decl_years! {
     aoc_2022 {
         day1 {task1;task2;}
@@ -111,7 +129,7 @@ decl_years! {
         day7 {task1;task2;}
         day8 {task1;task2;}
         day9 {task1;task2;}
-        day10 {task1;}
+        day14 {task1;task2;}
     }
 }
 
