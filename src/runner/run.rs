@@ -32,7 +32,7 @@ impl Display for FileNotFound {
 crate::error_wrapper! {
     Error {
         PartNotFound(PartNotFound),
-        FileNotFound(FileNotFound),
+        IoError(std::io::Error),
     }
 }
 
@@ -66,7 +66,8 @@ pub fn run(
         None => Err(PartNotFound::Task(task.to_owned()))?,
     };
 
-    let input = std::fs::read_to_string(input).map_err(|_| FileNotFound(input.to_owned()))?;
+    let input = PathBuf::from_iter([std::env::current_dir()?, input.to_owned()]);
+    let input = std::fs::read_to_string(input)?;
 
     task.run(input);
 
