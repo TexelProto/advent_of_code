@@ -1,8 +1,8 @@
 #![deny(private_in_public)]
 
-use std::{error::Error, path::PathBuf};
-use std::borrow::Cow;
 use clap::{value_parser, Arg};
+use std::borrow::Cow;
+use std::{error::Error, path::PathBuf};
 
 mod runner {
     pub mod all;
@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 path.set_extension("txt");
                 Cow::Owned(path)
             }
-            Some(path) => Cow::Borrowed(path)
+            Some(path) => Cow::Borrowed(path),
         };
         let output = run.get_one::<PathBuf>("output");
         let output_path = output.map(|p| p.as_path());

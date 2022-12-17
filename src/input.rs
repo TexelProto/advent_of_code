@@ -1,4 +1,4 @@
-﻿use std::convert::Infallible;
+use std::convert::Infallible;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::iter::*;
@@ -8,8 +8,13 @@ use std::str::FromStr;
 
 pub(crate) type Reader = BufReader<File>;
 
-pub fn parse_lines<E>(reader: &mut Reader, mut f: impl FnMut(&str) -> Result<(), E>) -> Result<(), E> 
-    where E: std::error::Error + From<std::io::Error>{
+pub fn parse_lines<E>(
+    reader: &mut Reader,
+    mut f: impl FnMut(&str) -> Result<(), E>,
+) -> Result<(), E>
+where
+    E: std::error::Error + From<std::io::Error>,
+{
     let mut buf = String::with_capacity(256);
     while reader.read_line(&mut buf)? > 0 {
         let s = buf.trim();
@@ -46,7 +51,11 @@ impl<T: FromStr> Input for Linewise<T> {
     type Error = Infallible;
 
     fn parse(read: Reader) -> Result<Self, Self::Error> {
-        Ok(Self { read, string: String::with_capacity(256), _t: PhantomData::default() })
+        Ok(Self {
+            read,
+            string: String::with_capacity(256),
+            _t: PhantomData::default(),
+        })
     }
 }
 
@@ -74,7 +83,11 @@ impl<T: FromStr, const N: usize, const PADDED: bool> Input for Chunked<T, N, PAD
     type Error = Infallible;
 
     fn parse(read: Reader) -> Result<Self, Self::Error> {
-        Ok(Self { read, string: String::with_capacity(256), _t: PhantomData::default() })
+        Ok(Self {
+            read,
+            string: String::with_capacity(256),
+            _t: PhantomData::default(),
+        })
     }
 }
 
@@ -120,8 +133,8 @@ impl<'a, T: FromStr, U, F: FnMut(Vec<T>) -> U> Iterator for GroupedMap<'a, T, U,
             None => None,
             Some(res) => match res {
                 Ok(res) => Some(Ok((self.1)(res))),
-                Err(err) => Some(Err(err))
-            }
+                Err(err) => Some(Err(err)),
+            },
         }
     }
 }
@@ -136,13 +149,17 @@ impl<T: FromStr> Input for Grouped<T> {
     type Error = Infallible;
 
     fn parse(read: Reader) -> Result<Self, Self::Error> {
-        Ok(Self { read, string: String::with_capacity(256), _t: PhantomData::default() })
+        Ok(Self {
+            read,
+            string: String::with_capacity(256),
+            _t: PhantomData::default(),
+        })
     }
 }
 
 impl<T: FromStr> Iterator for Grouped<T> {
     type Item = Result<Vec<T>, T::Err>;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         let mut vec = Vec::new();
         loop {
@@ -151,7 +168,7 @@ impl<T: FromStr> Iterator for Grouped<T> {
             if read == 0 || trimmed.len() == 0 {
                 break;
             }
-            
+
             let res = T::from_str(trimmed);
             self.string.clear();
             let t = match res {
@@ -168,4 +185,3 @@ impl<T: FromStr> Iterator for Grouped<T> {
         }
     }
 }
-

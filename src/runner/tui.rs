@@ -89,10 +89,10 @@ fn handle_list_events<T>(list: &mut StatefulList<T>) -> Result<Option<usize>, st
 }
 
 fn select<B, T, I>(title: &str, term: &mut Terminal<B>, iter: I) -> Result<T, std::io::Error>
-    where
-        B: Backend,
-        T: Display,
-        I: IntoIterator<Item=T>,
+where
+    B: Backend,
+    T: Display,
+    I: IntoIterator<Item = T>,
 {
     let mut list = StatefulList {
         title,
@@ -114,8 +114,8 @@ fn select<B, T, I>(title: &str, term: &mut Terminal<B>, iter: I) -> Result<T, st
 }
 
 pub fn select_file<B>(term: &mut Terminal<B>) -> Result<PathBuf, std::io::Error>
-    where
-        B: Backend,
+where
+    B: Backend,
 {
     let mut current_dir = std::env::current_dir()?;
     current_dir.push("inputs");

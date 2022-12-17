@@ -136,7 +136,7 @@ macro_rules! for_input {
     ($iter:ident, |$ele:ident| $body:tt) => {
         let mut m_iter = $iter;
         while let Some($ele) = Iterator::next(&mut m_iter) {
-            let $ele = $ele ?;
+            let $ele = $ele?;
             $body;
         }
     };
