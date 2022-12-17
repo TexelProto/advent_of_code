@@ -1,11 +1,12 @@
 use std::str::FromStr;
+use crate::input::Linewise;
 
 trait Score {
-    fn score(&self) -> usize;
+    fn score(&self) -> u64;
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum Move {
+pub enum Move {
     Rock,
     Paper,
     Scissors,
@@ -45,12 +46,25 @@ impl FromStr for Move {
 }
 
 impl Score for Move {
-    fn score(&self) -> usize {
+    fn score(&self) -> u64 {
         match self {
             Self::Rock => 1,
             Self::Paper => 2,
             Self::Scissors => 3,
         }
+    }
+}
+
+pub struct MoveMove(Move, Move);
+
+impl FromStr for MoveMove {
+    type Err = <Move as FromStr>::Err;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (a, b) = s.split_at(1);
+        let a = Move::from_str(a)?;
+        let b = Move::from_str(&b[1..])?;
+        Ok(Self(a, b))
     }
 }
 
@@ -75,12 +89,25 @@ impl FromStr for Outcome {
 }
 
 impl Score for Outcome {
-    fn score(&self) -> usize {
+    fn score(&self) -> u64 {
         match self {
             Self::Win => 6,
             Self::Draw => 3,
             Self::Loose => 0,
         }
+    }
+}
+
+pub struct MoveOutcome(Move, Outcome);
+
+impl FromStr for MoveOutcome {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (a, b) = s.split_at(1);
+        let a = Move::from_str(a)?;
+        let b = Outcome::from_str(&b[1..])?;
+        Ok(Self(a, b))
     }
 }
 
@@ -92,33 +119,20 @@ fn get_move(opponent: Move, outcome: Outcome) -> Move {
         .unwrap()
 }
 
-pub fn task1(input: String) {
-    let score = input
-            .lines()
-            .map(|s| s.trim().split_at(1))
-            .map(|(a, b)| {
-                (
-                    Move::from_str(a.trim()).unwrap(),
-                    Move::from_str(b.trim()).unwrap(),
-                )
-            })
-            .map(|t| t.0.score() + t.0.vs(t.1).score())
-            .sum::<usize>();
+pub fn task1(input: Linewise<MoveMove>) -> Result<u64, String> {
+    let mut score = 0_u64;
+    crate::for_input!(input, |t| {
+        score += t.0.score() + t.0.vs(t.1).score();
+    });
 
-        println!("Score: {}", score);
-    }
-    pub fn task2(input: String) {
-        let score = input
-            .lines()
-            .map(|s| s.trim().split_at(1))
-            .map(|(a, b)| {
-                (
-                    Move::from_str(a.trim()).unwrap(),
-                    Outcome::from_str(b.trim()).unwrap(),
-                )
-            })
-            .map(|(opp_move, outcome)| get_move(opp_move, outcome).score() + outcome.score())
-            .sum::<usize>();
+    Ok(score)
+}
 
-        println!("Score: {}", score);
-    }
+pub fn task2(input: Linewise<MoveOutcome>) -> Result<u64, String> {
+    let mut score = 0;
+    crate::for_input!(input, |t| {
+        score += get_move(t.0, t.1).score() + t.1.score();
+    });
+
+    Ok(score)
+}

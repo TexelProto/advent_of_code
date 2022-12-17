@@ -1,8 +1,11 @@
 ﻿use std::cmp::{max, min};
+use std::num::ParseIntError;
+use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
+use crate::input::{Input, parse_lines, Reader};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
-enum Tile {
+pub enum Tile {
     Empty,
     Wall,
     Sand,
@@ -14,47 +17,72 @@ const SPAWN_POINT: (usize, usize) = (SPAWN_POINT_X, SPAWN_POINT_Y);
 const WIDTH: usize = 800;
 const HEIGHT: usize = 200;
 
-type Map = [[Tile; HEIGHT]; WIDTH];
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    ParseIntError(#[from] ParseIntError),
+    #[error("Point left the bounds of the world")]
+    OutOfBoundsError,
+}
 
-fn parse<'a>(input: &'a str) -> impl Iterator<Item=impl 'a + Iterator<Item=(usize, usize)>> {
-    input.lines().map(|line: &str| {
-        line.trim().split(" -> ").map(|part: &str| {
-            let i = part.find(',').unwrap();
-            let (x, y) = part.split_at(i);
+pub struct Map([[Tile; HEIGHT]; WIDTH]);
 
-            let x = usize::from_str(x).unwrap();
-            let y = usize::from_str(&y[1..]).unwrap();
+impl Deref for Map {
+    type Target = [[Tile; HEIGHT]; WIDTH];
 
-            (x, y)
-        })
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl DerefMut for Map {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Input for Map {
+    type Error = Error;
+    fn parse(mut read: Reader) -> Result<Self, Self::Error> {
+        let mut data = [[Tile::Empty; HEIGHT]; WIDTH];
+        
+        parse_lines::<Error>(&mut read, |line| {
+            let points = parse_line(line).try_collect::<Vec<_>>()?;
+            for pair in points.windows(2) {
+                let (x0, y0) = pair[0];
+                let (x1, y1) = pair[1];
+                let x_min = min(x0, x1);
+                let y_min = min(y0, y1);
+                let x_max = max(x0, x1);
+                let y_max = max(y0, y1);
+
+                for x in x_min..=x_max {
+                    for y in y_min..=y_max {
+                        data[x][y] = Tile::Wall;
+                    }
+                }
+            }
+            Ok(())
+        })?;
+        
+        Ok(Self(data))
+    }
+}
+
+fn parse_line<'a>(line: &'a str) -> impl 'a + Iterator<Item=Result<(usize, usize), Error>> {
+    line.trim_start_matches('\u{feff}').split(" -> ").map(|s: &str| {
+        let i = s.find(',').unwrap();
+        let (x, y) = s.split_at(i);
+
+        let x = usize::from_str(x)?;
+        let y = usize::from_str(&y[1..])?;
+
+        Ok((x, y))
     })
 }
 
-fn create_map(walls: impl Iterator<Item=impl Iterator<Item=(usize, usize)>>) -> Map {
-    let mut map = [[Tile::Empty; HEIGHT]; WIDTH];
-    for wall in walls {
-        let points = wall.collect::<Vec<_>>();
-        for pair in points.windows(2) {
-            let (x0, y0) = pair[0];
-            let (x1, y1) = pair[1];
-            let x_min = min(x0, x1);
-            let y_min = min(y0, y1);
-            let x_max = max(x0, x1);
-            let y_max = max(y0, y1);
-
-            for x in x_min..=x_max {
-                for y in y_min..=y_max {
-                    map[x][y] = Tile::Wall;
-                }
-            }
-        }
-    }
-    map
-}
-
-struct OutOfBoundsError;
-
-fn drop_point(map: &Map, (x, y): (usize, usize)) -> Result<Option<(usize, usize)>, OutOfBoundsError> {
+fn drop_point(map: &Map, (x, y): (usize, usize)) -> Result<Option<(usize, usize)>, Error> {
     let y = y + 1;
 
     for x_offset in [0, -1, 1] {
@@ -64,7 +92,7 @@ fn drop_point(map: &Map, (x, y): (usize, usize)) -> Result<Option<(usize, usize)
         };
 
         if x >= WIDTH || y >= HEIGHT {
-            return Err(OutOfBoundsError);
+            return Err(Error::OutOfBoundsError);
         }
 
         if map[x][y] == Tile::Empty {
@@ -93,7 +121,7 @@ fn print_map(map: &Map) {
     println!();
 }
 
-fn drop_sand_particle(map: &Map) -> Result<(usize, usize), OutOfBoundsError> {
+fn drop_sand_particle(map: &Map) -> Result<(usize, usize), Error> {
     let mut point = SPAWN_POINT;
     while let Some(new_point) = drop_point(&map, point)? {
         point = new_point;
@@ -101,10 +129,7 @@ fn drop_sand_particle(map: &Map) -> Result<(usize, usize), OutOfBoundsError> {
     Ok(point)
 }
 
-pub fn task1(input: String) {
-    let walls = parse(&input[3..]);
-    let mut map = create_map(walls);
-
+pub fn task1(mut map: Map) -> Result<u64, Error>{
     let mut count = 0_u64;
     loop {
         if map[SPAWN_POINT_X][SPAWN_POINT_Y] != Tile::Empty {
@@ -113,22 +138,22 @@ pub fn task1(input: String) {
 
         let point = match drop_sand_particle(&map) {
             Ok(point) => point,
-            Err(_) => break,
+            Err(e) => match e { 
+                Error::OutOfBoundsError => break,
+                _ => return Err(e),
+            },
         };
 
         map[point.0][point.1] = Tile::Sand;
         count += 1;
     }
 
-    dbg!(count);
+    Ok(count)
 }
 
-pub fn task2(input: String) {
-    let walls = parse(&input[3..]);
-    let mut map = create_map(walls);
-
+pub fn task2(mut map: Map) -> Result<u64, Error>{
     let floor_height = (0..HEIGHT).rev().filter(|y| {
-        (0..WIDTH).any(move |x| map[x][*y] == Tile::Wall)
+        (0..WIDTH).any(|x| map[x][*y] == Tile::Wall)
     }).next().unwrap() + 2;
 
     (0..WIDTH).for_each(|x| {
@@ -141,14 +166,11 @@ pub fn task2(input: String) {
             break;
         }
 
-        let point = match drop_sand_particle(&map) {
-            Ok(point) => point,
-            Err(_) => panic!("Sand falling outside of the simulation should be impossible due to the floor"),
-        };
+        let point = drop_sand_particle(&map)?;
 
         map[point.0][point.1] = Tile::Sand;
         count += 1;
     }
 
-    println!("count = {}", count);
+    Ok(count)
 }

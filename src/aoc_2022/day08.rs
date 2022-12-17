@@ -3,23 +3,39 @@ use std::{
     ops::{Index, IndexMut},
     str::FromStr,
 };
+use std::convert::Infallible;
+use std::io::BufRead;
+use std::num::ParseIntError;
+use crate::input::{Input, Reader};
 
-struct Array2D<T, const X: usize, const Y: usize>([[T; Y]; X]);
-
-impl<T, const X: usize, const Y: usize> Index<(usize, usize)> for Array2D<T, X, Y> {
-    type Output = T;
-
-    fn index(&self, index: (usize, usize)) -> &Self::Output {
-        &self.0[index.0][index.1]
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
+    #[error(transparent)]
+    ParseError(#[from] ParseIntError),
 }
 
 #[derive(Debug)]
-struct Vec2D<T>(Vec<Vec<T>>);
+pub struct Vec2D<T>(Vec<Vec<T>>);
 
-impl<T: Default + Clone> Vec2D<T> {
-    fn with_size(x: usize, y: usize) -> Self {
-        Self(vec![vec![T::default(); y]; x])
+impl Input for Vec2D<usize> {
+    type Error = Error;
+    fn parse(mut read: Reader) -> Result<Self, Self::Error> {
+        let mut buf = String::new();
+        let mut lines = Vec::new();
+        while read.read_line(&mut buf)? > 0 {
+            let s = buf.trim();
+            let mut line = Vec::with_capacity(s.len());
+            for i in 0..s.len() {
+                let s = &s[i..=i];
+                let t = usize::from_str(s)?;
+                line.push(t);
+            }
+            lines.push(line);
+            buf.clear();
+        }
+        Ok(Self(lines))
     }
 }
 
@@ -34,6 +50,7 @@ impl<T> Vec2D<T> {
         self.0.get(0).map_or_else(usize::default, |s| s.len())
     }
 }
+
 impl<T> Index<(usize, usize)> for Vec2D<T> {
     type Output = T;
 
@@ -41,6 +58,7 @@ impl<T> Index<(usize, usize)> for Vec2D<T> {
         &self.0[index.0][index.1]
     }
 }
+
 impl<T> IndexMut<(usize, usize)> for Vec2D<T> {
     fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
         &mut self.0[index.0][index.1]
@@ -119,22 +137,6 @@ impl<'a, T> Vec2DWalker<'a, T> {
     }
 }
 
-fn parse(input: &str) -> Vec2D<usize> {
-    let w = input.lines().next().unwrap().len();
-    let h = input.lines().count();
-
-    let mut vec = Vec2D::<usize>::with_size(w, h);
-
-    for (y, line) in input.lines().enumerate() {
-        for x in 0..line.trim().len() {
-            let s = &line[x..=x];
-            let value = usize::from_str(s).unwrap();
-            vec[(x, y)] = value;
-        }
-    }
-    vec
-}
-
 fn view_in_direction(point: &Vec2DWalker<usize>, dir: Direction) -> (bool, usize) {
     let height = point.value();
     let mut opt_walker = point.in_direction(dir);
@@ -154,6 +156,7 @@ fn view_in_direction(point: &Vec2DWalker<usize>, dir: Direction) -> (bool, usize
         opt_walker = walker.in_direction(dir);
     }
 }
+
 fn is_point_visible(point: Vec2DWalker<usize>) -> bool {
     [
         Direction::Down,
@@ -161,9 +164,10 @@ fn is_point_visible(point: Vec2DWalker<usize>) -> bool {
         Direction::Right,
         Direction::Up,
     ]
-    .into_iter()
-    .any(move |d| view_in_direction(&point, d).0)
+        .into_iter()
+        .any(move |d| view_in_direction(&point, d).0)
 }
+
 fn score_point(point: Vec2DWalker<usize>) -> usize {
     [
         Direction::Down,
@@ -171,45 +175,37 @@ fn score_point(point: Vec2DWalker<usize>) -> usize {
         Direction::Right,
         Direction::Up,
     ]
-    .into_iter()
-    .map(move |d| {
-        let view = view_in_direction(&point, d).1;
-        if point.x == 49 && point.y == 86 {
-            println!("View {:?} is {}", d, view);
-        }
-        view
-    })
-    .product::<usize>()
+        .into_iter()
+        .map(move |d| view_in_direction(&point, d).1)
+        .product::<usize>()
 }
 
-pub fn task1(input: String) {
-    let map = parse(&input);
-
-        let mut visible = 2 * map.width() + 2 * map.height() - 4;
-        for x in 1..map.width() - 1 {
-            for y in 1..map.height() - 1 {
-                let point = Vec2DWalker::new(&map, x, y).unwrap();
-                if is_point_visible(point) {
-                    visible += 1;
-                }
+pub fn task1(map: Vec2D<usize>) -> Result<usize, Infallible> {
+    let mut visible = 2 * map.width() + 2 * map.height() - 4;
+    for x in 1..map.width() - 1 {
+        for y in 1..map.height() - 1 {
+            let point = Vec2DWalker::new(&map, x, y).unwrap();
+            if is_point_visible(point) {
+                visible += 1;
             }
         }
-
-        println!("visible: {}", visible);
     }
-    pub fn task2(input: String) {
-        let map = parse(&input);
-        let mut max = 0_usize;
 
-        for x in 0..map.width() {
-            for y in 0..map.height() {
-                let point = Vec2DWalker::new(&map, x, y).unwrap();
-                let score = score_point(point);
-                if score > max {
-                    max = score;
-                }
+    Ok(visible)
+}
+
+pub fn task2(map: Vec2D<usize>) -> Result<usize, Infallible> {
+    let mut max = 0_usize;
+
+    for x in 0..map.width() {
+        for y in 0..map.height() {
+            let point = Vec2DWalker::new(&map, x, y).unwrap();
+            let score = score_point(point);
+            if score > max {
+                max = score;
             }
         }
-
-        println!("max score: {}", max);
     }
+
+    Ok(max)
+}

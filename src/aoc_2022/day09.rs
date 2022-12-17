@@ -1,13 +1,24 @@
 use std::{
     cell::RefCell,
     collections::HashSet,
-    convert::Infallible,
     iter::{Repeat, Take},
     str::FromStr,
 };
+use std::num::ParseIntError;
+use crate::input::Linewise;
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error(transparent)]
+    ParseIntError( #[from] ParseIntError),
+    #[error("Unknown move '{0}'")]
+    UnknownMove(String),
+    #[error(transparent)]
+    IoError( #[from] std::io::Error),
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Move {
+pub enum Move {
     Up,
     Down,
     Left,
@@ -15,7 +26,7 @@ enum Move {
 }
 
 impl FromStr for Move {
-    type Err = Infallible;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         assert_eq!(s.len(), 1);
@@ -24,25 +35,25 @@ impl FromStr for Move {
             "U" => Self::Up,
             "D" => Self::Down,
             "L" => Self::Left,
-            _ => panic!("Unknown pattern {}", s),
+            _ => return Err(Error::UnknownMove(s.to_owned())),
         };
         Ok(value)
     }
 }
 
 #[derive(Debug, Clone, Copy)]
-struct MultiMove {
+pub struct MultiMove {
     mov: Move,
     repetitions: usize,
 }
 
 impl FromStr for MultiMove {
-    type Err = Infallible;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (m, i) = s.split_at(1);
-        let mov = Move::from_str(m.trim()).unwrap();
-        let i = usize::from_str(i.trim()).unwrap();
+        let mov = Move::from_str(m)?;
+        let i = usize::from_str(i.trim())?;
         let value = Self {
             mov,
             repetitions: i,
@@ -57,10 +68,6 @@ impl IntoIterator for MultiMove {
     fn into_iter(self) -> Self::IntoIter {
         std::iter::repeat(self.mov).take(self.repetitions)
     }
-}
-
-fn parse<'a>(input: &'a str) -> impl 'a + Iterator<Item = Move> {
-    input.lines().flat_map(|s| MultiMove::from_str(s).unwrap())
 }
 
 #[derive(Debug, Default, Clone, Copy, Hash, PartialEq, Eq)]
@@ -95,38 +102,45 @@ impl Point {
     }
 }
 
-pub fn task1(input: String) {
+pub fn task1(input: Linewise<MultiMove>) -> Result<usize, Error> {
     let mut visited = HashSet::new();
 
-        let mut head = Point::default();
-        let mut tail = Point::default();
-        for m in parse(&input) {
+    let mut head = Point::default();
+    let mut tail = Point::default();
+
+    for_input!(input, |multi| {
+        for m in multi {
             head.move_point(m);
             tail.follow(&head);
-
+    
             visited.insert(tail.clone());
         }
+    });
 
-        println!("visited: {}", visited.len());
-    }
-    pub fn task2(input: String) {
-        let mut visited = HashSet::new();
+    Ok(visited.len())
+}
 
-        let points = vec![RefCell::new(Point::default()); 10];
-        for m in parse(&input) {
+pub fn task2(input: Linewise<MultiMove>) -> Result<usize, Error> {
+    let mut visited = HashSet::new();
+
+    let points = vec![RefCell::new(Point::default()); 10];
+
+    for_input!(input, |multi| {
+        for m in multi {
             {
                 points[0].borrow_mut().move_point(m);
             }
-
+    
             for i in 1..points.len() {
-                let previous = points[i-1].borrow();
+                let previous = points[i - 1].borrow();
                 let mut point = points[i].borrow_mut();
                 point.follow(&previous);
             }
-
+    
             let tail = points.last().unwrap().borrow();
             visited.insert(tail.clone());
         }
+    });
 
-        println!("visited: {}", visited.len());
-    }
+    Ok(visited.len())
+}

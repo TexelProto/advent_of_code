@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::convert::Infallible;
 
 #[derive(Debug)]
 struct Compartment<'a>(&'a str);
@@ -15,7 +16,7 @@ impl<'a> Compartment<'a> {
     }
 }
 
-fn get_duplicates<'a>(all: impl IntoIterator<Item = &'a Compartment<'a>>) -> Vec<char> {
+fn get_duplicates<'a>(all: impl IntoIterator<Item=&'a Compartment<'a>>) -> Vec<char> {
     let mut iter = all.into_iter();
     let mut set = match iter.next() {
         Some(c) => c.0.chars().collect::<HashSet<_>>(),
@@ -30,34 +31,35 @@ fn get_duplicates<'a>(all: impl IntoIterator<Item = &'a Compartment<'a>>) -> Vec
     set.into_iter().collect::<Vec<_>>()
 }
 
-fn score_item(c: char) -> usize {
+fn score_item(c: char) -> u64 {
     let score = if c.is_uppercase() {
         (c as u8) - ('A' as u8) + 27
     } else {
         (c as u8) - ('a' as u8) + 1
     };
-    score as usize
+    score as u64
 }
 
-pub fn task1(input: String) {
+pub fn task1(input: String) -> Result<u64, Infallible> {
     let score = input
-            .lines()
-            .map(Compartment::from_bag)
-            .flat_map(|(c1, c2)| get_duplicates([&c1, &c2]))
-            .map(score_item)
-            .sum::<usize>();
+        .lines()
+        .map(Compartment::from_bag)
+        .flat_map(|(c1, c2)| get_duplicates([&c1, &c2]))
+        .map(score_item)
+        .sum::<u64>();
 
-        println!("Score: {}", score);
-    }
-    pub fn task2(input: String) {
-        let score = input
-            .lines()
-            .map(Compartment::from_line)
-            .collect::<Vec<_>>()
-            .chunks(3)
-            .flat_map(get_duplicates)
-            .map(score_item)
-            .sum::<usize>();
+    Ok(score)
+}
 
-        println!("Score: {}", score);
-    }
+pub fn task2(input: String) -> Result<u64, Infallible> {
+    let score = input
+        .lines()
+        .map(Compartment::from_line)
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .flat_map(get_duplicates)
+        .map(score_item)
+        .sum::<u64>();
+
+    Ok(score)
+}

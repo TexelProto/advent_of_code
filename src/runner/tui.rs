@@ -16,12 +16,6 @@ use tui::{
 
 use tui::widgets::{Borders, StatefulWidget, Widget};
 
-crate::error_wrapper! {
-    Error {
-        IoError(std::io::Error),
-    }
-}
-
 struct StatefulList<'a, T> {
     title: &'a str,
     state: ListState,
@@ -77,7 +71,7 @@ impl<T: Display> Widget for &mut StatefulList<'_, T> {
     }
 }
 
-fn handle_list_events<T>(list: &mut StatefulList<T>) -> Result<Option<usize>, Error> {
+fn handle_list_events<T>(list: &mut StatefulList<T>) -> Result<Option<usize>, std::io::Error> {
     let key = match crossterm::event::read()? {
         Event::Key(key) => key,
         _ => return Ok(None),
@@ -94,11 +88,11 @@ fn handle_list_events<T>(list: &mut StatefulList<T>) -> Result<Option<usize>, Er
     Ok(None)
 }
 
-fn select<B, T, I>(title: &str, term: &mut Terminal<B>, iter: I) -> Result<T, Error>
-where
-    B: Backend,
-    T: Display,
-    I: IntoIterator<Item = T>,
+fn select<B, T, I>(title: &str, term: &mut Terminal<B>, iter: I) -> Result<T, std::io::Error>
+    where
+        B: Backend,
+        T: Display,
+        I: IntoIterator<Item=T>,
 {
     let mut list = StatefulList {
         title,
@@ -119,9 +113,9 @@ where
     Ok(value)
 }
 
-pub fn select_file<B>(term: &mut Terminal<B>) -> Result<PathBuf, Error>
-where
-    B: Backend,
+pub fn select_file<B>(term: &mut Terminal<B>) -> Result<PathBuf, std::io::Error>
+    where
+        B: Backend,
 {
     let mut current_dir = std::env::current_dir()?;
     current_dir.push("inputs");
@@ -144,7 +138,7 @@ where
     Ok(current_dir)
 }
 
-pub fn run() -> Result<(), Error> {
+pub fn run() -> Result<(), std::io::Error> {
     enable_raw_mode()?;
     execute!(stderr(), EnterAlternateScreen)?;
 
@@ -156,12 +150,12 @@ pub fn run() -> Result<(), Error> {
     let task = select("Select task", &mut terminal, day.tasks())?;
 
     let input = select_file(&mut terminal)?;
-    let input = std::fs::read_to_string(input)?;
 
     execute!(stderr(), LeaveAlternateScreen)?;
     disable_raw_mode()?;
 
-    task.run(input);
+    let output = task.run(input.as_path());
+    println!("{}", output);
 
     println!("Press enter to exit...");
     std::io::stdin().read_line(&mut String::new())?;

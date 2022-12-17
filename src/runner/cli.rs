@@ -43,7 +43,7 @@ where
     }
 }
 
-pub fn run() -> Result<(), Error> {
+pub fn run() -> Result<(), std::io::Error> {
     let year = select_from_list(advent_of_code::get_years(), |y| y.name());
     let day = select_from_list(year.days(), |d| d.name());
     let task = select_from_list(day.tasks(), |t| t.name());
@@ -58,17 +58,10 @@ pub fn run() -> Result<(), Error> {
         };
     };
 
-    let input = std::fs::read_to_string(full)?;
-
-    task.run(input);
+    let output = task.run(full.as_path());
+    println!("{}", output);
 
     println!("Press enter to exit...");
     std::io::stdin().read_line(&mut String::new())?;
     Ok(())
-}
-
-crate::error_wrapper! {
-    Error {
-        IoError(std::io::Error),
-    }
 }

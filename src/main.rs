@@ -2,7 +2,6 @@
 
 use std::{error::Error, path::PathBuf};
 use std::borrow::Cow;
-
 use clap::{value_parser, Arg};
 
 mod runner {
@@ -69,38 +68,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn box_error<E: 'static + Error>(e: E) -> Box<dyn 'static + Error> {
     Box::new(e)
-}
-
-#[macro_export]
-macro_rules! error_wrapper {
-    (
-        $name:ident {
-            $( $var:ident($ty:path), )*
-        }
-    ) => {
-        #[derive(Debug)]
-        pub enum $name {
-            $( $var($ty), )*
-        }
-
-        impl std::error::Error for $name {}
-
-        impl std::fmt::Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                match self {
-                    $(
-                        Self:: $var (val) => std::fmt::Display::fmt(&val, f),
-                    )*
-                }
-            }
-        }
-
-        $(
-            impl From<$ty> for $name {
-                fn from(value: $ty) -> Self {
-                    Self:: $var (value)
-                }
-            }
-        )*
-    };
 }
