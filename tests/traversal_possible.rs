@@ -1,4 +1,5 @@
-use crate::common::pathfinding::*;
+use advent_of_code::common::pathfinding as pf;
+use pf::*;
 
 const MAP: Map = Map([[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0]]);
 
@@ -67,24 +68,24 @@ fn heuristic(_world: &Map, tile: &(usize, usize), end: &(usize, usize)) -> NonNa
 
 #[test]
 fn possible_path_astar() {
-    let alg = pathfinding::astar::Algorithm::new(heuristic);
+    let alg = pf::astar::Algorithm::new(heuristic);
     assert!(possible_path(&alg));
 }
 
 #[test]
 fn impossible_path_astar() {
-    let alg = pathfinding::astar::Algorithm::new(heuristic);
+    let alg = pf::astar::Algorithm::new(heuristic);
     assert!(impossible_path(&alg));
 }
 
 #[test]
 fn possible_path_djikstra() {
-    let alg = pathfinding::djikstra::Algorithm;
+    let alg = pf::djikstra::Algorithm;
     assert!(possible_path(&alg));
 }
 
 #[test]
 fn impossible_path_djikstra() {
-    let alg = pathfinding::djikstra::Algorithm;
+    let alg = pf::djikstra::Algorithm;
     assert!(impossible_path(&alg));
 }
