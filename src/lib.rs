@@ -153,7 +153,16 @@ decl_years! {
         day07 {task1;task2;}
         day08 {task1;task2;}
         day09 {task1;task2;}
+        day11 {task1;task2;}
+        // day12 {task1;task2;}
+        // day13 {task1;task2;}
         day14 {task1;task2;}
+        // day17 {task1;task2;}
+        // day18 {task1;task2;}
+        // day20 {task1;task2;}
+        // day21 {task1;task2;}
+        // day22 {task1;task2;}
+        // day23 {task1;task2;}
     }
 }
 

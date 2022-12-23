@@ -73,6 +73,47 @@ impl<T: FromStr> Iterator for Linewise<T> {
     }
 }
 
+pub struct Multiline<T: FromStr, const N: usize, const PADDED: bool> {
+    read: Reader,
+    string: String,
+    _t: PhantomData<T>,
+}
+
+impl<T: FromStr, const N: usize, const PADDED: bool> Input for Multiline<T, N, PADDED> {
+    type Error = Infallible;
+
+    fn parse(read: Reader) -> Result<Self, Self::Error> {
+        Ok(Self {
+            read,
+            string: String::with_capacity(256),
+            _t: PhantomData::default(),
+        })
+    }
+}
+
+impl<T: FromStr, const N: usize, const PADDED: bool> Iterator for Multiline<T, N, PADDED> {
+    type Item = Result<T, T::Err>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.string.clear();
+        for _ in 0..N {
+            let read = self.read.read_line(&mut self.string).unwrap();
+            if read == 0 {
+                return None;
+            }
+        }
+
+        let res = T::from_str(self.string.trim());
+        
+        if PADDED {
+            let _ = self.read.read_line(&mut self.string);
+            self.string.clear();
+        }
+
+        Some(res)
+    }
+}
+
 pub struct Chunked<T: FromStr, const N: usize, const PADDED: bool> {
     read: Reader,
     string: String,
