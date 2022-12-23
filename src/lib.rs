@@ -4,6 +4,9 @@ use std::fmt::Debug;
 use std::path::Path;
 
 mod input;
+mod common {
+    pub mod pathfinding;
+}
 
 #[derive(Debug)]
 pub struct Year {
@@ -154,7 +157,7 @@ decl_years! {
         day08 {task1;task2;}
         day09 {task1;task2;}
         day11 {task1;task2;}
-        // day12 {task1;task2;}
+        day12 {task1;task2;}
         // day13 {task1;task2;}
         day14 {task1;task2;}
         // day17 {task1;task2;}
