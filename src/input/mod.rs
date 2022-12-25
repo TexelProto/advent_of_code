@@ -1,6 +1,6 @@
+pub use self::{chars::*, group::*, lines::*};
 use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
-pub use self::{chars::*, group::*, lines::*};
 
 pub mod chars;
 pub mod group;

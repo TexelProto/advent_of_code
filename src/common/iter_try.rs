@@ -1,16 +1,21 @@
-pub fn try_flatten<T,E,TS,I>(iter: I) -> TryFlatten<T,E,TS,I>
-where 
+pub fn try_flatten<T, E, TS, I>(iter: I) -> TryFlatten<T, E, TS, I>
+where
     TS: IntoIterator<Item = T>,
-    I: Iterator<Item = Result<TS, E>>{
-    TryFlatten{super_iter: iter, current_iter: None}
+    I: Iterator<Item = Result<TS, E>>,
+{
+    TryFlatten {
+        super_iter: iter,
+        current_iter: None,
+    }
 }
 
-pub struct TryFlatten<T,E,TS,I>
-where 
+pub struct TryFlatten<T, E, TS, I>
+where
     TS: IntoIterator<Item = T>,
-    I: Iterator<Item = Result<TS, E>>{
+    I: Iterator<Item = Result<TS, E>>,
+{
     super_iter: I,
-    current_iter: Option<ResultIter<TS::IntoIter,E>>,
+    current_iter: Option<ResultIter<TS::IntoIter, E>>,
 }
 
 enum ResultIter<I: Iterator, E> {
@@ -18,12 +23,12 @@ enum ResultIter<I: Iterator, E> {
     Err(std::option::IntoIter<E>),
 }
 
-impl<T,E,TS,I> Iterator for TryFlatten<T,E,TS,I>
-where 
+impl<T, E, TS, I> Iterator for TryFlatten<T, E, TS, I>
+where
     TS: IntoIterator<Item = T>,
-    I: Iterator<Item = Result<TS, E>>{
-
-    type Item = Result<T,E>;
+    I: Iterator<Item = Result<TS, E>>,
+{
+    type Item = Result<T, E>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -34,16 +39,16 @@ where
                 None => match self.super_iter.next() {
                     // there was at least A result that should be yielded
                     Some(res) => {
-                        let iter: ResultIter<TS::IntoIter,E> = match res {
+                        let iter: ResultIter<TS::IntoIter, E> = match res {
                             Ok(ok) => ResultIter::Ok(ok.into_iter()),
                             Err(err) => ResultIter::Err(Some(err).into_iter()),
                         };
                         self.current_iter = Some(iter);
                         self.current_iter.as_mut().unwrap()
-                    },
-                    // sub- and super-iterator are exhausted: were done 
+                    }
+                    // sub- and super-iterator are exhausted: were done
                     None => return None,
-                }
+                },
             };
 
             // try continuing with the current sub iterator
@@ -51,11 +56,11 @@ where
                 ResultIter::Ok(ok) => match ok.next() {
                     Some(x) => return Some(Ok(x)),
                     None => continue,
-                }
+                },
                 ResultIter::Err(err) => match err.next() {
                     Some(x) => return Some(Err(x)),
                     None => continue,
-                }
+                },
             }
         }
     }

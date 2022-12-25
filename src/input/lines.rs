@@ -1,6 +1,5 @@
-use std::{str::FromStr, convert::Infallible, marker::PhantomData};
 use super::*;
-
+use std::{convert::Infallible, marker::PhantomData, str::FromStr};
 
 /// Adapter iterator reading from an underlying stream converting each line individually.
 /// [`Iterator::next()`] may yield a [`Result::Err`] after which further iteration may become unstable.
@@ -68,7 +67,7 @@ impl<T: FromStr, const N: usize, const PADDED: bool> Iterator for Multiline<T, N
         }
 
         let res = T::from_str(self.string.trim());
-        
+
         if PADDED {
             let _ = self.read.read_line(&mut self.string);
             self.string.clear();

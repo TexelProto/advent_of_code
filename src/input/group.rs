@@ -1,6 +1,5 @@
-use std::{str::FromStr, marker::PhantomData, convert::Infallible, mem::MaybeUninit};
 use super::*;
-
+use std::{convert::Infallible, marker::PhantomData, mem::MaybeUninit, str::FromStr};
 
 pub struct Chunked<T: FromStr, const N: usize, const PADDED: bool> {
     read: Reader,

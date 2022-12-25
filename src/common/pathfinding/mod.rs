@@ -96,8 +96,8 @@ impl<A: Score, B: Score, C: Score> AddAssign for Score3d<A, B, C> {
 
 pub trait World<'a> {
     type Index: Eq + Clone + Hash;
-    type Neighbors: IntoIterator<Item = Self::Index>;
-    fn get_neighbors(&self, origin: &Self::Index) -> Self::Neighbors;
+    type Neighbors: 'a + IntoIterator<Item = Self::Index>;
+    fn get_neighbors(&'a self, origin: &Self::Index) -> Self::Neighbors;
 }
 
 pub trait Agent<'a, W: World<'a>> {

@@ -1,4 +1,4 @@
-use std::{str::FromStr, marker::PhantomData, convert::Infallible};
+use std::{convert::Infallible, marker::PhantomData, str::FromStr};
 
 pub trait FromChar: Sized {
     type Err: std::error::Error;
@@ -12,7 +12,7 @@ pub struct Charwise<T: FromChar> {
 
 impl<T: FromChar> FromStr for Charwise<T> {
     type Err = Infallible;
-    
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self {
             str: s.to_owned().into_bytes().into_iter(),
@@ -25,6 +25,6 @@ impl<T: FromChar> Iterator for Charwise<T> {
     type Item = Result<T, T::Err>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.str.next().map(|b|T::from_char(b as char))
+        self.str.next().map(|b| T::from_char(b as char))
     }
 }
