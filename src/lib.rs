@@ -157,6 +157,7 @@ decl_years! {
         day07 {task1;task2;}
         day08 {task1;task2;}
         day09 {task1;task2;}
+        day10 {task1;task2;}
         day11 {task1;task2;}
         day12 {task1;task2;}
         day13 {task1;task2;}
