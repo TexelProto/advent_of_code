@@ -58,8 +58,9 @@ pub fn run() -> Result<(), std::io::Error> {
         };
     };
 
-    let output = task.run(full.as_path());
-    println!("{}", output);
+    let result = task.run(full.as_path());
+
+    println!("{}", crate::format_simple(result));
 
     println!("Press enter to exit...");
     std::io::stdin().read_line(&mut String::new())?;

@@ -50,8 +50,10 @@ pub fn run(
         None => return Err(PartNotFound::Task(task.to_owned()).into()),
     };
 
-    let output = task.run(input);
-    println!("{}", output);
+    let time = std::time::Instant::now();
+    let result = task.run(input);
+    let elapsed = time.elapsed();
 
+    println!("{}", crate::format_detailed(result, task, elapsed));
     Ok(())
 }

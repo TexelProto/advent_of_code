@@ -47,10 +47,11 @@ impl std::fmt::Display for Day {
     }
 }
 
+type TaskFn = dyn Sync + Fn(&Path) -> Result<String, String>;
 pub struct Task {
     full_name: &'static str,
     name: &'static str,
-    func: &'static (dyn Sync + Fn(&Path) -> String),
+    func: &'static TaskFn,
 }
 impl Task {
     pub fn full_name(&self) -> &'static str {
@@ -59,7 +60,7 @@ impl Task {
     pub fn name(&self) -> &'static str {
         self.name
     }
-    pub fn run(&self, input: &Path) -> String {
+    pub fn run(&self, input: &Path) -> Result<String, String> {
         (self.func)(input)
     }
 }
@@ -106,25 +107,13 @@ macro_rules! decl_years {
                                 name: stringify!($task),
                                 func: & |path| {
                                     const NAME: &str = stringify!($year::$day::$task);
-                                    let file = match std::fs::File::open(path) {
-                                        Ok(file) => file,
-                                        Err(e) => {
-                                            return format!("ERR {:?}", e);
-                                        }
-                                    };
+                                    let file = std::fs::File::open(path).map_err(|e| format!("{}", e))?;
                                     let buf_file = std::io::BufReader::new(file);
                                     let result: Result<_,_> = parse_input(buf_file);
-                                    let input = match result {
-                                        Ok(input) => input,
-                                        Err(e) => {
-                                            return format!("ERR {:?}", e);
-                                        }
-                                    };
+                                    let input = result.map_err(|e| format!("{}", e))?;
                                     let result: Result<_, _> = $year :: $day :: $task (input);
-                                    match result {
-                                        Ok(ok) => format!("OK {}", ok),
-                                        Err(e) => format!("ERR {:?}", e),
-                                    }
+                                    result.map(|x| format!("{}", x))
+                                        .map_err(|e| format!("{}", e))
                                 }
                             },)*
                         ]
@@ -163,7 +152,7 @@ decl_years! {
         day13 {task1;task2;}
         day14 {task1;task2;}
         day16 {task1;task2;}
-        day17 {task1;task2;}
+        day17 {task1;}
         day18 {task1;task2;}
         // day20 {task1;task2;}
         day21 {task1;task2;}

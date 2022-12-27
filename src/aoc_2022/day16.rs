@@ -182,7 +182,6 @@ pub fn task2(mut valves: Linewise<Valve>) -> Result<usize, Error> {
     let root_node = &map.valves[&root_name];
 
     let len = map.non_zero.len() as u32;
-    dbg!(len);
     // nodes = 4
     // 1<<4  = 10000
     // 1<<4-1= 01111

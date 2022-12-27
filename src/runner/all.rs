@@ -23,12 +23,10 @@ pub fn run() -> Result<(), Infallible> {
             let result = task.run(path.as_path());
             let elapsed = time.elapsed();
 
-            let _ = stdout.lock().write_fmt(format_args!(
-                "Task {} finished in {:-9?}: {:?}\n",
-                task.full_name(),
-                elapsed,
-                result
-            ));
+            let _ = stdout.lock().write_fmt(
+                format_args!("{}\r\n",
+                crate::format_detailed(result, task, elapsed))
+            );
 
             elapsed
         })

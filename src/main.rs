@@ -1,7 +1,10 @@
 #![deny(private_in_public)]
 
+use advent_of_code::Task;
 use clap::{value_parser, Arg};
 use std::borrow::Cow;
+use std::fmt::format;
+use std::time::Duration;
 use std::{error::Error, path::PathBuf};
 
 mod runner {
@@ -68,4 +71,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn box_error<E: 'static + Error>(e: E) -> Box<dyn 'static + Error> {
     Box::new(e)
+}
+
+fn format_simple(res: Result<String, String>) -> String {
+    let (status, message) = match res {
+        Ok(ok) => ("OK ", ok),
+        Err(e) => ("ERR", e),
+    };
+
+    format!("{} {}", status, message)
+}
+
+fn format_duration(duration: Duration) -> String {
+    let s = duration.as_secs();
+    let ms = duration.subsec_millis();
+    let ys = duration.subsec_micros() % 1000;
+    let ns = duration.subsec_nanos() % 1000;
+    if duration.as_secs() > 0 {
+        format!("{s}.{ms}s")
+    } else if ms > 0 {
+        format!("{ms}.{ys}ms")
+    } else if ys > 0 {
+        format!("{ys}.{ns}ys")
+    } else {
+        format!("{ns}ns")
+    }
+}
+
+fn format_detailed(res: Result<String, String>, task: &Task, duration: Duration) -> String {
+    let (status, message) = match res {
+        Ok(ok) => ("OK ", ok),
+        Err(e) => ("ERR", e),
+    };
+
+    let duration = format_duration(duration);
+    let name = task.full_name();
+
+    format!("{status} [{duration:9}] {name:26} {message}")
 }
