@@ -5,6 +5,14 @@ pub trait FromChar: Sized {
     fn from_char(c: char) -> Result<Self, Self::Err>;
 }
 
+impl FromChar for char {
+    type Err = Infallible;
+
+    fn from_char(c: char) -> Result<Self, Self::Err> {
+        Ok(c)
+    }
+}
+
 pub struct Charwise<T: FromChar> {
     str: std::vec::IntoIter<u8>,
     _t: PhantomData<T>,

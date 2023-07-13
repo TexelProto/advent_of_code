@@ -1,5 +1,29 @@
-use super::*;
-use std::{convert::Infallible, marker::PhantomData, mem::MaybeUninit, str::FromStr};
+use std::convert::Infallible;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::iter::*;
+use std::marker::PhantomData;
+use std::mem::MaybeUninit;
+use std::str::FromStr;
+use super::Input;
+
+pub(crate) type Reader = BufReader<File>;
+
+pub fn parse_lines<E>(
+    reader: &mut Reader,
+    mut f: impl FnMut(&str) -> Result<(), E>,
+) -> Result<(), E>
+where
+    E: std::error::Error + From<std::io::Error>,
+{
+    let mut buf = String::with_capacity(256);
+    while reader.read_line(&mut buf)? > 0 {
+        let s = buf.trim();
+        f(s)?;
+        buf.clear();
+    }
+    Ok(())
+}
 
 pub struct Chunked<T: FromStr, const N: usize, const PADDED: bool> {
     read: Reader,
@@ -51,26 +75,6 @@ pub struct Grouped<T: FromStr> {
     read: Reader,
     string: String,
     _t: PhantomData<T>,
-}
-
-pub struct GroupedMap<'a, T: FromStr, U, F: FnMut(Vec<T>) -> U>(&'a mut Grouped<T>, F);
-impl<'a, T: FromStr, U, F: FnMut(Vec<T>) -> U> Iterator for GroupedMap<'a, T, U, F> {
-    type Item = Result<U, T::Err>;
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.0.next() {
-            None => None,
-            Some(res) => match res {
-                Ok(res) => Some(Ok((self.1)(res))),
-                Err(err) => Some(Err(err)),
-            },
-        }
-    }
-}
-
-impl<T: FromStr> Grouped<T> {
-    pub fn try_map<U, F: FnMut(Vec<T>) -> U>(&mut self, f: F) -> GroupedMap<T, U, F> {
-        GroupedMap(self, f)
-    }
 }
 
 impl<T: FromStr> Input for Grouped<T> {

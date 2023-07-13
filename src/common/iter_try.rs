@@ -55,11 +55,17 @@ where
             match &mut iter {
                 ResultIter::Ok(ok) => match ok.next() {
                     Some(x) => return Some(Ok(x)),
-                    None => continue,
+                    None => {
+                        self.current_iter = None;
+                        continue;
+                    }
                 },
                 ResultIter::Err(err) => match err.next() {
                     Some(x) => return Some(Err(x)),
-                    None => continue,
+                    None => {
+                        self.current_iter = None;
+                        continue;
+                    }
                 },
             }
         }

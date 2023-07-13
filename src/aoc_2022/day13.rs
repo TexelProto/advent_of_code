@@ -99,12 +99,12 @@ pub fn task1(items: Chunked<Item, 2, true>)  -> Result<usize, Error>  {
         .enumerate()
         .try_fold(0_usize, |acc, (i, pair)| {
             let pair = pair?;
-             let val = if pair[0] < pair[1] {
-                 i + 1
-             } else {
-                 0
-             };
-             Ok::<usize, Error>(acc + val)
+            let val = if pair[0] < pair[1] {
+                i + 1
+            } else {
+                0
+            };
+            Ok::<usize, Error>(acc + val)
          })?;
     Ok(acc)
 }
