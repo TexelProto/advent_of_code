@@ -3,7 +3,6 @@
 use advent_of_code::Task;
 use clap::{value_parser, Arg};
 use std::borrow::Cow;
-use std::fmt::format;
 use std::time::Duration;
 use std::{error::Error, path::PathBuf};
 

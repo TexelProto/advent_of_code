@@ -19,7 +19,7 @@ fn encode_name(s: &str) -> u16 {
 
     unsafe {
         let b = s.as_bytes().as_ptr();
-        *(b as *const u16)
+        std::ptr::read_unaligned(b as *const u16)
     }
 }
 

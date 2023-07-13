@@ -71,7 +71,7 @@ impl Input for Map {
 }
 
 fn parse_line<'a>(line: &'a str) -> impl 'a + Iterator<Item=Result<(usize, usize), Error>> {
-    line.trim_start_matches('\u{feff}').split(" -> ").map(|s: &str| {
+    line.split(" -> ").map(|s: &str| {
         let i = s.find(',').unwrap();
         let (x, y) = s.split_at(i);
 

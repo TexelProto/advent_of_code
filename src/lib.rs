@@ -1,13 +1,16 @@
 #![feature(iterator_try_collect)]
 
+extern crate core;
+
 use std::fmt::Debug;
+use std::io::{Read, Seek};
 use std::path::Path;
 
-pub mod input;
-pub mod common {
+pub mod common{
     pub mod iter_try;
     pub mod pathfinding;
 }
+mod input;
 
 #[derive(Debug)]
 pub struct Year {
@@ -106,8 +109,9 @@ macro_rules! decl_years {
                                 full_name: stringify!($year::$day::$task),
                                 name: stringify!($task),
                                 func: & |path| {
-                                    const NAME: &str = stringify!($year::$day::$task);
-                                    let file = std::fs::File::open(path).map_err(|e| format!("{}", e))?;
+                                    let mut file = std::fs::File::open(path)
+                                        .map_err(|e| format!("{}", e))?;
+                                    // TODO read the byte order mark if it exists
                                     let buf_file = std::io::BufReader::new(file);
                                     let result: Result<_,_> = parse_input(buf_file);
                                     let input = result.map_err(|e| format!("{}", e))?;
@@ -157,7 +161,7 @@ decl_years! {
         // day20 {task1;task2;}
         day21 {task1;task2;}
         // day22 {task1;task2;}
-        // day23 {task1;task2;}
+        day23 {task1;task2;}
     }
 }
 
