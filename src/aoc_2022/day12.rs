@@ -1,4 +1,4 @@
-use std::{convert::Infallible, str::FromStr, io::BufRead};
+use std::io::BufRead;
 
 use crate::{common::pathfinding as pf, input::Input};
 
@@ -17,17 +17,6 @@ impl Input for Map {
             buf.clear();
         }
         Ok(Vec2d(lines))
-    }
-}
-
-impl FromStr for Map {
-    type Err = Infallible;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self(
-            s.lines()
-                .map(|line| line.trim().chars().collect::<Vec<_>>())
-                .collect::<Vec<_>>(),
-        ))
     }
 }
 
