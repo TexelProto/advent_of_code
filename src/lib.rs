@@ -3,7 +3,6 @@
 extern crate core;
 
 use std::fmt::Debug;
-use std::io::{Read, Seek};
 use std::path::Path;
 
 pub mod common{
@@ -155,13 +154,16 @@ decl_years! {
         day12 {task1;task2;}
         day13 {task1;task2;}
         day14 {task1;task2;}
+        day15 {task1;task2;}
         day16 {task1;task2;}
-        day17 {task1;}
+        day17 {task1;task2;}
         day18 {task1;task2;}
-        // day20 {task1;task2;}
+        // day19 {task1;task2;}
         day21 {task1;task2;}
         // day22 {task1;task2;}
         day23 {task1;task2;}
+        // day24 {task1;task2;}
+        // day25 {task1;}
     }
 }
 
