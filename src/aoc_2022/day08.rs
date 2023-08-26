@@ -6,7 +6,7 @@ use std::{
 use std::convert::Infallible;
 use std::io::BufRead;
 use std::num::ParseIntError;
-use crate::input::{Input, Reader};
+use crate::input::Input;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -19,9 +19,9 @@ pub enum Error {
 #[derive(Debug)]
 pub struct Vec2D<T>(Vec<Vec<T>>);
 
-impl Input for Vec2D<usize> {
+impl Input<'_> for Vec2D<usize> {
     type Error = Error;
-    fn parse(mut read: Reader) -> Result<Self, Self::Error> {
+    fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut buf = String::new();
         let mut lines = Vec::new();
         while read.read_line(&mut buf)? > 0 {

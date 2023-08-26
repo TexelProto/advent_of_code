@@ -3,7 +3,6 @@
 extern crate core;
 
 use std::fmt::Debug;
-use std::io::{Read, Seek};
 use std::path::Path;
 
 pub mod common{
@@ -80,7 +79,7 @@ impl std::fmt::Display for Task {
     }
 }
 
-fn parse_input<T: input::Input>(read: input::Reader) -> Result<T, T::Error> {
+fn parse_input<T: input::Input<'static>>(read: input::Reader) -> Result<T, T::Error> {
     T::parse(read)
 }
 
@@ -109,7 +108,7 @@ macro_rules! decl_years {
                                 full_name: stringify!($year::$day::$task),
                                 name: stringify!($task),
                                 func: & |path| {
-                                    let mut file = std::fs::File::open(path)
+                                    let file = std::fs::File::open(path)
                                         .map_err(|e| format!("{}", e))?;
                                     // TODO read the byte order mark if it exists
                                     let buf_file = std::io::BufReader::new(file);
@@ -158,10 +157,9 @@ decl_years! {
         day16 {task1;task2;}
         day17 {task1;}
         day18 {task1;task2;}
-        // day20 {task1;task2;}
+        // day20 {task1;part1;test1;}
         day21 {task1;task2;}
         // day22 {task1;task2;}
-        day23 {task1;task2;}
     }
 }
 

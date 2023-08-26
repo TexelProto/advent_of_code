@@ -6,9 +6,9 @@ pub struct Vec2d<T>(Vec<Vec<T>>);
 
 type Map = Vec2d<char>;
 
-impl Input for Map {
+impl Input<'_> for Map {
     type Error = std::io::Error;
-    fn parse(mut read: crate::input::Reader) -> Result<Self, Self::Error> {
+    fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut lines = Vec::new();
         let mut buf = String::new();
         while read.read_line(&mut buf)? > 0 {

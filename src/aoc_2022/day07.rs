@@ -1,10 +1,8 @@
-use std::{
-    str::{FromStr},
-};
 use std::convert::Infallible;
 use std::io::BufRead;
 use std::num::ParseIntError;
-use crate::input::{Input, Reader};
+use std::str::FromStr;
+use crate::input::Input;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -53,7 +51,7 @@ fn try_parse_command(s: &str) -> Option<Result<Command, Error>> {
     Some(Ok(command))
 }
 
-fn parse_dir(name: String, reader: &mut Reader, buf: &mut String) -> Result<Directory, Error> {
+fn parse_dir(name: String, reader: &mut impl BufRead, buf: &mut String) -> Result<Directory, Error> {
     let mut dir = Directory {
         name,
         directories: Vec::new(),
@@ -96,9 +94,9 @@ pub struct Directory {
     files: Vec<File>,
 }
 
-impl Input for Directory {
+impl Input<'_> for Directory {
     type Error = Error;
-    fn parse(mut read: Reader) -> Result<Self, Self::Error> {
+    fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut buf = String::with_capacity(256);
         read.read_line(&mut buf)?;
         buf.clear();
