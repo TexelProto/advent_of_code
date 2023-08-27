@@ -1,16 +1,13 @@
 use std::convert::Infallible;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 use std::iter::*;
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use std::str::FromStr;
 use super::Input;
 
-pub(crate) type Reader = BufReader<File>;
-
 pub fn parse_lines<E>(
-    reader: &mut Reader,
+    reader: &mut impl BufRead,
     mut f: impl FnMut(&str) -> Result<(), E>,
 ) -> Result<(), E>
 where
@@ -25,25 +22,25 @@ where
     Ok(())
 }
 
-pub struct Chunked<T: FromStr, const N: usize, const PADDED: bool> {
-    read: Reader,
+pub struct Chunked<'a, T: FromStr, const N: usize, const PADDED: bool> {
+    read: Box<dyn 'a + BufRead>,
     string: String,
     _t: PhantomData<T>,
 }
 
-impl<T: FromStr, const N: usize, const PADDED: bool> Input for Chunked<T, N, PADDED> {
+impl<'a, T: FromStr, const N: usize, const PADDED: bool> Input<'a> for Chunked<'a, T, N, PADDED> {
     type Error = Infallible;
 
-    fn parse(read: Reader) -> Result<Self, Self::Error> {
+    fn parse<R: 'a + BufRead>(read: R) -> Result<Self, Self::Error> {
         Ok(Self {
-            read,
+            read: Box::new(read),
             string: String::with_capacity(256),
             _t: PhantomData::default(),
         })
     }
 }
 
-impl<T: FromStr, const N: usize, const PADDED: bool> Iterator for Chunked<T, N, PADDED> {
+impl<T: FromStr, const N: usize, const PADDED: bool> Iterator for Chunked<'_, T, N, PADDED> {
     type Item = Result<[T; N], T::Err>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -71,25 +68,25 @@ impl<T: FromStr, const N: usize, const PADDED: bool> Iterator for Chunked<T, N, 
     }
 }
 
-pub struct Grouped<T: FromStr> {
-    read: Reader,
+pub struct Grouped<'a, T: FromStr> {
+    read: Box<dyn 'a + BufRead>,
     string: String,
     _t: PhantomData<T>,
 }
 
-impl<T: FromStr> Input for Grouped<T> {
+impl<'a, T: FromStr> Input<'a> for Grouped<'a, T> {
     type Error = Infallible;
 
-    fn parse(read: Reader) -> Result<Self, Self::Error> {
+    fn parse<R: 'a + BufRead>(read: R) -> Result<Self, Self::Error> {
         Ok(Self {
-            read,
+            read: Box::new(read),
             string: String::with_capacity(256),
             _t: PhantomData::default(),
         })
     }
 }
 
-impl<T: FromStr> Iterator for Grouped<T> {
+impl<T: FromStr> Iterator for Grouped<'_, T> {
     type Item = Result<Vec<T>, T::Err>;
 
     fn next(&mut self) -> Option<Self::Item> {

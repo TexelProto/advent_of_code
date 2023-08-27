@@ -1,8 +1,9 @@
 ﻿use std::cmp::{max, min};
+use std::io::BufRead;
 use std::num::ParseIntError;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
-use crate::input::{Input, parse_lines, Reader};
+use crate::input::{Input, parse_lines};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum Tile {
@@ -42,9 +43,9 @@ impl DerefMut for Map {
     }
 }
 
-impl Input for Map {
+impl Input<'_> for Map {
     type Error = Error;
-    fn parse(mut read: Reader) -> Result<Self, Self::Error> {
+    fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut data = [[Tile::Empty; HEIGHT]; WIDTH];
         
         parse_lines::<Error>(&mut read, |line| {
