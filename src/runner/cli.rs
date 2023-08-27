@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, io::BufReader};
 
 fn get_input<T, E>(prompt: &str) -> T
 where
@@ -58,7 +58,9 @@ pub fn run() -> Result<(), std::io::Error> {
         };
     };
 
-    let result = task.run(full.as_path());
+    let file = std::fs::File::open(&full).unwrap();
+    let mut buf = BufReader::new(file);
+    let result = task.run(&mut buf);
 
     println!("{}", crate::format_simple(result));
 

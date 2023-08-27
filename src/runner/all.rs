@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 use std::convert::Infallible;
-use std::io::Write;
+use std::io::{Write, BufReader};
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -19,9 +19,22 @@ pub fn run() -> Result<(), Infallible> {
         .into_par_iter()
         .map(|t| {
             let (task, path) = t;
-            let time = std::time::Instant::now();
-            let result = task.run(path.as_path());
-            let elapsed = time.elapsed();
+
+            let result;
+            let elapsed;
+            match std::fs::File::open(&path) {
+                Ok(file) => {
+                    let mut buf = BufReader::new(file);
+
+                    let time = std::time::Instant::now();
+                    result = task.run(&mut buf);
+                    elapsed = time.elapsed();
+                },
+                Err(err) => {
+                    result = Err(format!("{err}"));
+                    elapsed = Duration::ZERO;
+                },
+            };
 
             let _ = stdout.lock().write_fmt(
                 format_args!("{}\r\n",

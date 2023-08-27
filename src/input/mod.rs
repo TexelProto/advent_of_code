@@ -1,12 +1,9 @@
 pub use self::{chars::*, group::*, lines::*};
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 
 pub mod chars;
 pub mod group;
 pub mod lines;
-
-pub type Reader = BufReader<File>;
 
 pub trait Input<'a>: Sized {
     type Error: std::error::Error;

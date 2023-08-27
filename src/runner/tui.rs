@@ -1,3 +1,4 @@
+use std::io::BufReader;
 use std::{fmt::Display, io::stderr, path::PathBuf};
 
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
@@ -154,7 +155,9 @@ pub fn run() -> Result<(), std::io::Error> {
     execute!(stderr(), LeaveAlternateScreen)?;
     disable_raw_mode()?;
 
-    let result = task.run(input.as_path());
+    let file = std::fs::File::open(&input).unwrap();
+    let mut buf = BufReader::new(file);
+    let result = task.run(&mut buf);
 
     println!("{}", crate::format_simple(result));
 

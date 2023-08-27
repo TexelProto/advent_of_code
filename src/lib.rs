@@ -3,7 +3,7 @@
 extern crate core;
 
 use std::fmt::Debug;
-use std::path::Path;
+use std::io::BufRead;
 
 pub mod common{
     pub mod iter_try;
@@ -49,7 +49,7 @@ impl std::fmt::Display for Day {
     }
 }
 
-type TaskFn = dyn Sync + Fn(&Path) -> Result<String, String>;
+type TaskFn = dyn Sync + Fn(&mut dyn BufRead) -> Result<String, String>;
 pub struct Task {
     full_name: &'static str,
     name: &'static str,
@@ -62,7 +62,7 @@ impl Task {
     pub fn name(&self) -> &'static str {
         self.name
     }
-    pub fn run(&self, input: &Path) -> Result<String, String> {
+    pub fn run(&self, input: &mut impl BufRead) -> Result<String, String> {
         (self.func)(input)
     }
 }
@@ -79,7 +79,9 @@ impl std::fmt::Display for Task {
     }
 }
 
-fn parse_input<T: input::Input<'static>>(read: input::Reader) -> Result<T, T::Error> {
+fn parse_input<'a, T, R>(read: &'a mut R) -> Result<T, T::Error> 
+    where T: input::Input<'a>, R: 'a + BufRead
+{
     T::parse(read)
 }
 
@@ -107,12 +109,8 @@ macro_rules! decl_years {
                             $(Task {
                                 full_name: stringify!($year::$day::$task),
                                 name: stringify!($task),
-                                func: & |path| {
-                                    let file = std::fs::File::open(path)
-                                        .map_err(|e| format!("{}", e))?;
-                                    // TODO read the byte order mark if it exists
-                                    let buf_file = std::io::BufReader::new(file);
-                                    let result: Result<_,_> = parse_input(buf_file);
+                                func: & |mut read| {
+                                    let result: Result<_,_> = parse_input(&mut read);
                                     let input = result.map_err(|e| format!("{}", e))?;
                                     let result: Result<_, _> = $year :: $day :: $task (input);
                                     result.map(|x| format!("{}", x))

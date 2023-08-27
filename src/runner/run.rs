@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::{path::{Path, PathBuf}, io::BufReader};
 
 #[derive(Debug, thiserror::Error)]
 pub enum PartNotFound {
@@ -50,8 +50,13 @@ pub fn run(
         None => return Err(PartNotFound::Task(task.to_owned()).into()),
     };
 
+    let file = std::fs::File::open(&input)
+        .map_err(move |_| Error::FileNotFound(input.to_path_buf()))?;
+
+    let mut buf = BufReader::new(file);
+
     let time = std::time::Instant::now();
-    let result = task.run(input);
+    let result = task.run(&mut buf);
     let elapsed = time.elapsed();
 
     println!("{}", crate::format_detailed(result, task, elapsed));
