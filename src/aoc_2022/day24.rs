@@ -24,31 +24,6 @@ impl Default for Tile {
     }
 }
 
-fn print_map(grid: &Grid<Tile>) {
-    for i in 0..grid.rows() {
-        for t in grid.iter_row(i) {
-            if *t == Tile::WALL {
-                print!("#");
-            } else if *t == Tile::LEFT {
-                print!("<");
-            } else if *t == Tile::RIGHT {
-                print!(">");
-            } else if *t == Tile::UP {
-                print!("^");
-            } else if *t == Tile::DOWN {
-                print!("v");
-            } else if t.is_empty() {
-                print!(".");
-            } else {
-                print!("{}", t.bits.count_ones())
-            }
-        }
-        println!();
-    }
-    println!();
-    println!();
-}
-
 struct Map(RefCell<Vec<Grid<Tile>>>);
 
 impl FromStr for Map {
