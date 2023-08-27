@@ -118,7 +118,6 @@ pub fn task2(input: Linewise<SensorPoint>) -> Result<u64, pattern_parse::ParseEr
                 }
                 None => {
                     if sensors.iter().all(|s| distance(&s.pos, &Point(x,y)) > s.range) {
-                        println!("x={x} y={y}");
                         let x = x as u64;
                         let y = y as u64;
                         let result = x * 4000000 + y;
