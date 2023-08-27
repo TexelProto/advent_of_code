@@ -1,6 +1,6 @@
 use std::{collections::HashSet, str::FromStr, num::ParseIntError};
 
-use crate::{common::pathfinding as pf, input::Linewise};
+use crate::{common::{pathfinding as pf, iter_ext::try_collect}, input::Linewise};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -110,8 +110,8 @@ fn manhatten_distance(_world: &World, start: &Point, end: &Point) -> u64 {
     r * 3
 }
 
-pub fn task1(mut points: Linewise<Point>) -> Result<u64, Error>{
-    let world = World::new(points.try_collect()?);
+pub fn task1(points: Linewise<Point>) -> Result<u64, Error>{
+    let world = World::new(try_collect(points)?);
     let mut count: u64 = 0;
         
     for point in &world.points {
@@ -128,8 +128,8 @@ pub fn task1(mut points: Linewise<Point>) -> Result<u64, Error>{
     Ok(count)
 }
 
-pub fn task2(mut points: Linewise<Point>) -> Result<u64, Error>{
-    let world = World::new(points.try_collect()?);
+pub fn task2(points: Linewise<Point>) -> Result<u64, Error>{
+    let world = World::new(try_collect(points)?);
     let agent = Agent;
     let alg = pf::astar::Algorithm::new(manhatten_distance);
     let root = Point(0, 0, 0);

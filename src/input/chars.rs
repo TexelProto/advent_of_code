@@ -24,7 +24,7 @@ impl<T: FromChar> FromStr for Charwise<T> {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self {
             str: s.to_owned().into_bytes().into_iter(),
-            _t: PhantomData::default(),
+            _t: PhantomData,
         })
     }
 }

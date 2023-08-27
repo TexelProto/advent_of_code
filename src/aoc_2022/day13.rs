@@ -4,7 +4,7 @@ use std::{
     str::FromStr, num::ParseIntError,
 };
 
-use crate::{input::Chunked, common::iter_try::try_flatten};
+use crate::{input::Chunked, common::iter_ext::*};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -110,7 +110,7 @@ pub fn task1(items: Chunked<Item, 2, true>)  -> Result<usize, Error>  {
 }
 
 pub fn task2(items: Chunked<Item, 2, true>) -> Result<usize, Error> {
-    let mut items = try_flatten(items).try_collect::<Vec<_>>()?;
+    let mut items: Vec<_> = try_collect(try_flatten(items))?;
     let marker1 = Item::List(vec!(Item::List(vec![Item::Number(2)])));
     let marker2 = Item::List(vec!(Item::List(vec![Item::Number(6)])));
     items.push(marker1.clone());

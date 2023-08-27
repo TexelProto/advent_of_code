@@ -7,7 +7,7 @@ where
         super_iter: iter,
         current_iter: None,
     }
-}
+} 
 
 pub struct TryFlatten<T, E, TS, I>
 where
@@ -70,4 +70,23 @@ where
             }
         }
     }
+}
+
+pub unsafe trait UnlimitedIterator: Iterator {
+    fn next_unlimited(&mut self) -> Self::Item {
+        unsafe { self.next().unwrap_unchecked() }
+    }
+}
+
+unsafe impl<I> UnlimitedIterator for std::iter::Cycle<I> 
+    where I: Iterator + Clone {}
+
+pub fn try_collect<C, R, E>(iter: impl Iterator<Item = Result<R, E>>) -> Result<C, E>
+    where C: Default + Extend<R>
+{
+    let mut result = C::default();
+    for res in iter {
+        result.extend([res?]);
+    }
+    Ok(result)
 }

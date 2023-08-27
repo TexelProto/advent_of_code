@@ -1,12 +1,8 @@
-#![feature(iterator_try_collect)]
-
-extern crate core;
-
 use std::fmt::Debug;
 use std::io::BufRead;
 
 pub mod common{
-    pub mod iter_try;
+    pub mod iter_ext;
     pub mod pathfinding;
 }
 mod input;

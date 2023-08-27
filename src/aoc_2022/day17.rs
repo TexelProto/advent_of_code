@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::input::{chars::{FromChar, Charwise}, lines::Linewise};
+use crate::{input::{chars::{FromChar, Charwise}, lines::Linewise}, common::iter_ext::try_collect};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -82,7 +82,7 @@ fn can_drop(shape: &MutShape, occupied: &HashSet<u64>) -> bool {
 
 pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<u32,Error> {
     let shapes = SHAPES.iter().cycle();
-    let shifts = chars.flat_map(|r| r.unwrap()).try_collect::<Vec<_>>()?;
+    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
     let mut shifts = shifts.iter().cycle();
 
     let mut occupied = HashSet::<u64>::new();
@@ -113,7 +113,7 @@ pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<u32,Error> {
 
 pub fn task2(chars: Linewise<Charwise<Shift>>) -> Result<u32,Error> {
     let shapes = SHAPES.iter().cycle();
-    let shifts = chars.flat_map(|r| r.unwrap()).try_collect::<Vec<_>>()?;
+    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
     let mut shifts = shifts.iter().cycle();
 
     let mut occupied = HashSet::<u64>::new();

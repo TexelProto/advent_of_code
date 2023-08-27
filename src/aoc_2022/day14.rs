@@ -3,6 +3,7 @@ use std::io::BufRead;
 use std::num::ParseIntError;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
+use crate::common::iter_ext::try_collect;
 use crate::input::{Input, parse_lines};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -49,7 +50,7 @@ impl Input<'_> for Map {
         let mut data = [[Tile::Empty; HEIGHT]; WIDTH];
         
         parse_lines::<Error>(&mut read, |line| {
-            let points = parse_line(line).try_collect::<Vec<_>>()?;
+            let points: Vec<_> = try_collect(parse_line(line))?;
             for pair in points.windows(2) {
                 let (x0, y0) = pair[0];
                 let (x1, y1) = pair[1];

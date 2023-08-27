@@ -124,7 +124,7 @@ pub struct Path<'a, W: World<'a>> {
 
 impl<'a, W: World<'a>> Path<'a, W> {
     pub fn world(&self) -> &'a W {
-        &self.world
+        self.world
     }
     pub fn positions(&self) -> &[W::Index] {
         &self.positions
