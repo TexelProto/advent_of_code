@@ -1,3 +1,5 @@
+#![allow(dead_code)] // stop complaining about the unfinished task2 >:(
+
 use std::ops::Deref;
 
 use grid::Grid;
@@ -27,7 +29,6 @@ enum Move {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[allow(dead_code)]
 #[repr(u8)]
 enum Direction {
     Right,
