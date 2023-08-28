@@ -1,26 +1,58 @@
-use std::collections::HashSet;
-
-use crate::{input::{chars::{FromChar, Charwise}, lines::Linewise}, common::iter_ext::try_collect};
+use crate::{
+    common::iter_ext::try_collect,
+    input::{
+        chars::{Charwise, FromChar},
+        lines::Linewise,
+    },
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Unknown shift char '{0}'")]
-    UnknownShift(char)
+    UnknownShift(char),
 }
 
-type Point = (u8, u32);
-type Shape<'a> = &'a [Point];
-type MutShape = Vec<Point>;
+type Row = u8;
+type Shape<'a> = &'a [Row];
+type MutShape = Vec<Row>;
 
-const SHAPES: [Shape<'static>;5] = [
-    &[(0,0),(1,0),(2,0),(3,0)],
-    &[(1,0),(0,1),(1,1),(1,2),(2,1)],
-    &[(0,0),(1,0),(2,0),(2,1),(2,2)],
-    &[(0,0),(0,1),(0,2),(0,3)],
-    &[(0,0),(0,1),(1,0),(1,1)],
+#[rustfmt::skip]
+const SHAPES: [Shape<'static>; 5] = [
+    // ####
+    &[0b_00011110],
+    // .#.
+    // ###
+    // .#.
+    &[
+        0b_00001000, 
+        0b_00011100, 
+        0b_00001000,
+    ],
+    // ..#
+    // ..#
+    // ###
+    &[
+        0b_00011100, 
+        0b_00000100, 
+        0b_00000100,
+    ],
+    // #
+    // #
+    // #
+    // #
+    &[
+        0b_00010000, 
+        0b_00010000, 
+        0b_00010000, 
+        0b_00010000
+    ],
+    // ##
+    // ##
+    &[
+        0b_00011000, 
+        0b_00011000
+    ],
 ];
-
-const WIDTH: u8 = 7;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Shift {
@@ -34,110 +66,167 @@ impl FromChar for Shift {
         match c {
             '<' => Ok(Self::Left),
             '>' => Ok(Self::Right),
-            c => Err(Error::UnknownShift(c))
+            c => Err(Error::UnknownShift(c)),
         }
     }
 }
+const WIDTH: u8 = 7;
+const LEFT_EDGE: u8 = 1 << (WIDTH - 1);
+const RIGHT_EDGE: u8 = 1;
 
-fn encode_point(p: &Point) -> u64 {
-    (p.0 as u64) << 32 | (p.1 as u64)
-}
-
-fn try_shift(shape: &mut MutShape, shift: Shift, occupied: &HashSet<u64>) {
+fn try_shift(shape: &mut MutShape, height: usize, shift: Shift, occupied: &Vec<u8>) {
     match shift {
         Shift::Left => {
-            if shape.iter().any(|p| p.0 == 0) {
+            let blocked = shape.iter().any(|p| {
+                // row is already at the left edge
+                p & LEFT_EDGE != 0
+            }) || shape_intersects(shape, height, 1, occupied);
+
+            if blocked {
                 return;
             }
-            if shape.iter().any(|p| occupied.contains(&encode_point(&(p.0-1, p.1)))){
-                return;
-            }
-            shape.iter_mut().for_each(|p| p.0 -= 1);
-        },
+            
+            shape.iter_mut().for_each(|p| *p <<= 1);
+        }
         Shift::Right => {
-            if shape.iter().any(|p| p.0 == WIDTH - 1) {
+            let blocked = shape.iter().any(|p| {
+                // row is already at the right edge
+                p & RIGHT_EDGE != 0                 
+            }) || shape_intersects(shape, height, -1, occupied);
+            
+            if blocked {
                 return;
             }
-            if shape.iter().any(|p| occupied.contains(&encode_point(&(p.0+1, p.1)))){
-                return;
-            }
-            shape.iter_mut().for_each(|p| p.0 += 1);            
-        },
+
+            shape.iter_mut().for_each(|p| *p >>= 1);
+        }
     }
 }
 
-fn can_drop(shape: &MutShape, occupied: &HashSet<u64>) -> bool {
-    for point in shape {
-        if point.1 == 0 {
-            return false;
-        }
+#[inline]
+fn shape_intersects(shape: &MutShape, height: usize, shift_left: i8, occupied: &Vec<u8>) -> bool {
+    for i in 0..shape.len() {
+        let row = match occupied.get(i + height) {
+            Some(x) => x,
+            None => break,
+        };
 
-        let down = (point.0, point.1 - 1);
-        if occupied.contains(&encode_point(&down)) {
-            return false;
+        let shape_line = match shift_left < 0 {
+            true => shape[i] >> -shift_left,
+            false => shape[i] << shift_left,
+        };
+        // check if the shape, after the shift, intersects with the occupied tiles
+        if shape_line & row != 0 {
+            return true;
         }
     }
-    true
+    false
 }
 
-pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<u32,Error> {
+fn drop_shape(
+    mut shape: Vec<u8>,
+    shifts: &mut impl Iterator<Item = Shift>,
+    occupied: &mut Vec<u8>,
+    max_y: &mut usize,
+) {
+    let mut height = *max_y + 3;
+    loop {
+        try_shift(
+            &mut shape,
+            height,
+            shifts.next().unwrap().clone(),
+            &*occupied,
+        );
+
+        if height == 0 {
+            break;
+        }
+
+        if shape_intersects(&shape, height - 1, 0, &*occupied) {
+            break;
+        }
+        // let mut clone = occupied.clone();
+        // while clone.len() < height + shape.len() {
+        //     clone.push(0);
+        // }
+        // for i in 0..shape.len() {
+        //     clone[height + i] |= shape[i];
+        // }
+
+        // print_map(&clone, 8);
+        // println!();
+
+        height -= 1;
+    }
+
+    *max_y = std::cmp::max(height + shape.len(), *max_y);
+    while occupied.len() < *max_y {
+        occupied.push(0);
+    }
+    for i in 0..shape.len() {
+        occupied[height + i] |= shape[i];
+    }
+}
+
+pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<usize, Error> {
     let shapes = SHAPES.iter().cycle();
     let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
-    let mut shifts = shifts.iter().cycle();
+    let mut shifts = shifts.into_iter().cycle();
 
-    let mut occupied = HashSet::<u64>::new();
+    let mut occupied = vec![];
     let mut max_y = 0;
 
-    for mut shape in shapes.take(20).map(|s|s.to_vec()) {
+    for shape in shapes.take(2022).map(|s| s.to_vec()) {
         // move the shape 3 units above the highest occupied tile
-        shape.iter_mut().for_each(|p| *p = (p.0 + 2, p.1 + max_y + 3));
-
-        loop {
-            try_shift(&mut shape, shifts.next().unwrap().clone(), &occupied);
-
-            if can_drop(&shape, &occupied) {
-                shape.iter_mut().for_each(|p| p.1 -= 1);
-            } else {
-                break;
-            }
-        }
-
-        for point in shape {
-            occupied.insert(encode_point(&point));
-            max_y = std::cmp::max(point.1+1, max_y);
-        }
+        drop_shape(shape, &mut shifts, &mut occupied, &mut max_y);
     }
 
     Ok(max_y)
 }
+#[cfg(test)]
+mod tests {
+    use crate::input::Input;
 
-pub fn task2(chars: Linewise<Charwise<Shift>>) -> Result<u32,Error> {
-    let shapes = SHAPES.iter().cycle();
-    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
-    let mut shifts = shifts.iter().cycle();
+    use super::*;
 
-    let mut occupied = HashSet::<u64>::new();
-    let mut max_y = 0;
+    const TEST_INPUT: &[u8] = b">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>";
 
-    for mut shape in shapes.take(2022).map(|s|s.to_vec()) {
-        // move the shape 3 units above the highest occupied tile
-        shape.iter_mut().for_each(|p| *p = (p.0 + 2, p.1 + max_y + 3));
+    #[test]
+    fn test_task1() {
+        let chars = Linewise::<Charwise<Shift>>::parse(TEST_INPUT).unwrap();
+        let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap())).unwrap();
+        let mut shifts = shifts.into_iter().cycle();
+        let shapes = SHAPES.iter().cycle();
 
-        loop {
-            try_shift(&mut shape, shifts.next().unwrap().clone(), &occupied);
+        let mut occupied = vec![];
+        let mut max_y = 0;
 
-            if can_drop(&shape, &occupied) {
-                shape.iter_mut().for_each(|p| p.1 -= 1);
-            } else {
-                break;
-            }
+        for shape in shapes.take(2022).map(|s| s.to_vec()) {
+            // move the shape 3 units above the highest occupied tile
+            drop_shape(shape, &mut shifts, &mut occupied, &mut max_y);
+
+            print_map(&occupied, 8);
+            println!();
         }
 
-        for point in shape {
-            occupied.insert(encode_point(&point));
-            max_y = std::cmp::max(point.1+1, max_y);
-        }
+        assert_eq!(max_y, 3068);
     }
 
-    Ok(max_y)
+    fn print_map(occupied: &Vec<u8>, height: usize) {
+        let min = occupied.len().checked_sub(height).unwrap_or(0);
+        let max = min + height;
+        let mut row_str = String::with_capacity(8);
+        for y in (min..max).rev() {
+            row_str.clear();
+            let row = occupied.get(y).cloned().unwrap_or(0);
+            for x in (0..WIDTH).rev() {
+                if row & (1 << x) != 0 {
+                    row_str.push('#');
+                } else {
+                    row_str.push('.');
+                }
+            }
+            println!("{}", row_str);
+        }
+    }    
 }
