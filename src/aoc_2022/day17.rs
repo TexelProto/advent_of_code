@@ -1,3 +1,5 @@
+use std::collections::hash_map::Entry;
+
 use crate::{
     common::iter_ext::try_collect,
     input::{
@@ -5,6 +7,7 @@ use crate::{
         lines::Linewise,
     },
 };
+use ahash::*;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -85,15 +88,15 @@ fn try_shift(shape: &mut MutShape, height: usize, shift: Shift, occupied: &Vec<u
             if blocked {
                 return;
             }
-            
+
             shape.iter_mut().for_each(|p| *p <<= 1);
         }
         Shift::Right => {
             let blocked = shape.iter().any(|p| {
                 // row is already at the right edge
-                p & RIGHT_EDGE != 0                 
+                p & RIGHT_EDGE != 0
             }) || shape_intersects(shape, height, -1, occupied);
-            
+
             if blocked {
                 return;
             }
@@ -125,7 +128,8 @@ fn shape_intersects(shape: &MutShape, height: usize, shift_left: i8, occupied: &
 
 fn drop_shape(
     mut shape: Vec<u8>,
-    shifts: &mut impl Iterator<Item = Shift>,
+    shifts: &[Shift],
+    shift_index: &mut usize,
     occupied: &mut Vec<u8>,
     max_y: &mut usize,
 ) {
@@ -134,9 +138,10 @@ fn drop_shape(
         try_shift(
             &mut shape,
             height,
-            shifts.next().unwrap().clone(),
+            shifts[*shift_index],
             &*occupied,
         );
+        *shift_index = (*shift_index + 1) % shifts.len();
 
         if height == 0 {
             break;
@@ -145,16 +150,6 @@ fn drop_shape(
         if shape_intersects(&shape, height - 1, 0, &*occupied) {
             break;
         }
-        // let mut clone = occupied.clone();
-        // while clone.len() < height + shape.len() {
-        //     clone.push(0);
-        // }
-        // for i in 0..shape.len() {
-        //     clone[height + i] |= shape[i];
-        // }
-
-        // print_map(&clone, 8);
-        // println!();
 
         height -= 1;
     }
@@ -171,18 +166,92 @@ fn drop_shape(
 pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<usize, Error> {
     let shapes = SHAPES.iter().cycle();
     let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
-    let mut shifts = shifts.into_iter().cycle();
+    let mut shift_index = 0;
 
     let mut occupied = vec![];
     let mut max_y = 0;
 
     for shape in shapes.take(2022).map(|s| s.to_vec()) {
         // move the shape 3 units above the highest occupied tile
-        drop_shape(shape, &mut shifts, &mut occupied, &mut max_y);
+        drop_shape(shape, &shifts, &mut shift_index, &mut occupied, &mut max_y);
     }
 
     Ok(max_y)
 }
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+struct CacheKey {
+    top_rows: [u8; CACHE_KEY_SIZE],
+    shape_index: u16,
+    shift_index: u16,
+}
+const CACHE_KEY_SIZE: usize = 23;
+
+pub fn task2(chars: Linewise<Charwise<Shift>>) -> Result<u64, Error> {
+    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
+    let mut shift_index = 0;
+
+    let mut cache = HashMap::<CacheKey, _>::new();
+
+    let mut occupied = vec![];
+    let mut max_y = 0;
+    let mut dropped: u64 = 0;
+
+    let collision = loop {
+        let shape_index = (dropped % SHAPES.len() as u64) as usize;
+        let shape: Vec<u8> = SHAPES[shape_index].to_vec();
+        // move the shape 3 units above the highest occupied tile
+        drop_shape(shape, &shifts, &mut shift_index, &mut occupied, &mut max_y);
+        dropped += 1;
+
+        if occupied.len() < CACHE_KEY_SIZE {
+            continue;
+        }
+
+        // take the top rows of the occupied tiles as the cache key
+        let mut top_rows = [0u8; CACHE_KEY_SIZE];
+        let min = occupied.len() - CACHE_KEY_SIZE;
+        top_rows.copy_from_slice(&occupied[min..]);
+
+        let key = CacheKey {
+            top_rows,
+            shape_index: shape_index as u16,
+            shift_index: shift_index as u16,
+        };
+        match cache.entry(key) {
+            Entry::Occupied(occ) => break *occ.get(),
+            Entry::Vacant(vac) => vac.insert((dropped, max_y)),
+        };
+    };
+
+    const TOTAL_STEPS: u64 = 1000000000000;
+    
+    let prev_iter = collision.0;
+    let prev_y = collision.1;
+
+    // calculate the number of loops and the growth during each loop
+    let loop_iterations = dropped - prev_iter;
+    let y_diff = max_y - prev_y;
+    let remaining_steps = TOTAL_STEPS - dropped;
+    let full_loops = remaining_steps / loop_iterations as u64;
+    let loop_growth = full_loops * y_diff as u64;
+    
+    let remaining_steps = remaining_steps - (full_loops * loop_iterations as u64);
+
+    for _ in 0..remaining_steps {
+        let index = (dropped % SHAPES.len() as u64) as usize;
+        let shape: Vec<u8> = SHAPES[index].to_vec();
+        // move the shape 3 units above the highest occupied tile
+        drop_shape(shape, &shifts, &mut shift_index, &mut occupied, &mut max_y);
+        dropped += 1;
+    }
+
+    dropped += loop_iterations * full_loops;
+    assert_eq!(dropped, TOTAL_STEPS);
+
+    Ok(max_y as u64 + loop_growth)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::input::Input;
@@ -194,24 +263,17 @@ mod tests {
     #[test]
     fn test_task1() {
         let chars = Linewise::<Charwise<Shift>>::parse(TEST_INPUT).unwrap();
-        let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap())).unwrap();
-        let mut shifts = shifts.into_iter().cycle();
-        let shapes = SHAPES.iter().cycle();
-
-        let mut occupied = vec![];
-        let mut max_y = 0;
-
-        for shape in shapes.take(2022).map(|s| s.to_vec()) {
-            // move the shape 3 units above the highest occupied tile
-            drop_shape(shape, &mut shifts, &mut occupied, &mut max_y);
-
-            print_map(&occupied, 8);
-            println!();
-        }
-
+        let max_y = task1(chars).unwrap();
         assert_eq!(max_y, 3068);
     }
+    #[test]
+    fn test_task2() {
+        let chars = Linewise::<Charwise<Shift>>::parse(TEST_INPUT).unwrap();
+        let total = task2(chars).unwrap();
+        assert_eq!(total, 1514285714288_u64);
+    }
 
+    #[allow(dead_code)]
     fn print_map(occupied: &Vec<u8>, height: usize) {
         let min = occupied.len().checked_sub(height).unwrap_or(0);
         let max = min + height;
@@ -228,5 +290,5 @@ mod tests {
             }
             println!("{}", row_str);
         }
-    }    
+    }
 }
