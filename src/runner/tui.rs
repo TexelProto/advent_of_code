@@ -17,6 +17,9 @@ use tui::{
 
 use tui::widgets::{Borders, StatefulWidget, Widget};
 
+#[derive(Debug, clap_derive::Parser)]
+pub struct Args;
+
 struct StatefulList<'a, T> {
     title: &'a str,
     state: ListState,
@@ -139,7 +142,7 @@ where
     Ok(current_dir)
 }
 
-pub fn run() -> Result<(), std::io::Error> {
+pub fn run(_: Args) -> Result<(), std::io::Error> {
     enable_raw_mode()?;
     execute!(stderr(), EnterAlternateScreen)?;
 

@@ -18,3 +18,4 @@ aoc_2022 = { version = "0.1.0", path = "aoc_2022" }
 common = { version = "0.1.0", path = "common" }
 anyhow = "1.0.75"
 thiserror = "1.0.47"
+clap_derive = "4.4.2"

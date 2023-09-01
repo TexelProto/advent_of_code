@@ -4,7 +4,10 @@ use std::path::PathBuf;
 use std::time::Duration;
 use rayon::prelude::*;
 
-pub fn run() -> Result<(), Infallible> {
+#[derive(Debug, clap_derive::Parser)]
+pub struct Args;
+
+pub fn run(_: Args) -> Result<(), Infallible> {
     let tasks = crate::YEARS
         .iter()
         .flat_map(|y| {
