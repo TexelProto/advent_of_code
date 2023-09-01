@@ -17,3 +17,5 @@ if [ ! -d "$1" ]; then
 fi
 
 cp "_daytemplate.rs" "$1/src/$2"
+
+echo "Created ./$1/src/$2"
