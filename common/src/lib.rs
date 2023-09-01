@@ -3,6 +3,7 @@ use std::{io::BufRead, fmt::Debug};
 pub mod input;
 pub mod pathfinding;
 pub mod iter_ext;
+pub mod debug;
 
 
 #[derive(Debug)]
