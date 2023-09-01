@@ -1,16 +1,17 @@
-use rayon::prelude::*;
 use std::convert::Infallible;
 use std::io::{Write, BufReader};
 use std::path::PathBuf;
 use std::time::Duration;
+use rayon::prelude::*;
 
 pub fn run() -> Result<(), Infallible> {
-    let tasks = advent_of_code::get_years()
+    let tasks = crate::YEARS
+        .iter()
         .flat_map(|y| {
-            y.days().iter().flat_map(|d| {
-                let mut path = PathBuf::from_iter(["inputs", y.name(), d.name()]);
+            y.days.iter().flat_map(|d| {
+                let mut path = PathBuf::from_iter(["inputs", y.name, d.name]);
                 path.set_extension("txt");
-                d.tasks().iter().map(move |t| (t, path.clone()))
+                d.tasks.iter().map(move |t| (t, path.clone()))
             })
         })
         .collect::<Vec<_>>();

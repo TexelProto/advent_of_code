@@ -44,9 +44,9 @@ where
 }
 
 pub fn run() -> Result<(), std::io::Error> {
-    let year = select_from_list(advent_of_code::get_years(), |y| y.name());
-    let day = select_from_list(year.days(), |d| d.name());
-    let task = select_from_list(day.tasks(), |t| t.name());
+    let year = select_from_list(crate::YEARS, |y| y.name);
+    let day = select_from_list(year.days, |d| d.name);
+    let task = select_from_list(day.tasks, |t| t.name);
 
     let dir = std::env::current_dir()?;
     let full = loop {

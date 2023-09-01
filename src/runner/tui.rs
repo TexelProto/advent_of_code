@@ -146,9 +146,9 @@ pub fn run() -> Result<(), std::io::Error> {
     let backend = CrosstermBackend::new(stderr());
     let mut terminal = Terminal::new(backend)?;
 
-    let year = select("Select year", &mut terminal, advent_of_code::get_years())?;
-    let day = select("Select day", &mut terminal, year.days())?;
-    let task = select("Select task", &mut terminal, day.tasks())?;
+    let year = select("Select year", &mut terminal, crate::YEARS)?;
+    let day = select("Select day", &mut terminal, year.days)?;
+    let task = select("Select task", &mut terminal, day.tasks)?;
 
     let input = select_file(&mut terminal)?;
 

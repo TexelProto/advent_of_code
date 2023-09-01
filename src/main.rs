@@ -1,10 +1,9 @@
 #![deny(private_in_public)]
 
-use advent_of_code::Task;
 use clap::{value_parser, Arg};
 use std::borrow::Cow;
 use std::time::Duration;
-use std::{error::Error, path::PathBuf};
+use std::path::PathBuf;
 
 mod runner {
     pub mod all;
@@ -13,7 +12,11 @@ mod runner {
     pub mod tui;
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+static YEARS: &[&common::Year] = &[
+    &aoc_2022::YEAR,
+];
+
+fn main() -> Result<(), anyhow::Error> {
     use clap::{command, Command};
     let matches = command!()
         .subcommand(
@@ -45,9 +48,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .get_matches();
     if let Some(_tui) = matches.subcommand_matches("tui") {
-        runner::tui::run().map_err(box_error)
+        runner::tui::run()?;
     } else if let Some(_all) = matches.subcommand_matches("all") {
-        runner::all::run().map_err(box_error)
+        runner::all::run()?;
     } else if let Some(run) = matches.subcommand_matches("run") {
         let year = run.get_one::<String>("year").unwrap();
         let day = run.get_one::<String>("day").unwrap();
@@ -62,14 +65,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let output = run.get_one::<PathBuf>("output");
         let output_path = output.map(|p| p.as_path());
-        runner::run::run(year, day, task, &input, output_path).map_err(box_error)
+        runner::run::run(year, day, task, &input, output_path)?;
     } else {
-        runner::cli::run().map_err(box_error)
+        runner::cli::run()?;
     }
-}
-
-fn box_error<E: 'static + Error>(e: E) -> Box<dyn 'static + Error> {
-    Box::new(e)
+    Ok(())
 }
 
 fn format_simple(res: Result<String, String>) -> String {
@@ -97,14 +97,14 @@ fn format_duration(duration: Duration) -> String {
     }
 }
 
-fn format_detailed(res: Result<String, String>, task: &Task, duration: Duration) -> String {
+fn format_detailed(res: Result<String, String>, task: &common::Task, duration: Duration) -> String {
     let (status, message) = match res {
         Ok(ok) => ("OK ", ok),
         Err(e) => ("ERR", e),
     };
 
     let duration = format_duration(duration);
-    let name = task.full_name();
+    let name = task.full_name;
 
     format!("{status} [{duration:9}] {name:26} {message}")
 }

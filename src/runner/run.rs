@@ -27,8 +27,9 @@ pub fn run(
     input: &Path,
     _output: Option<&Path>,
 ) -> Result<(), Error> {
-    let y = advent_of_code::get_years()
-        .filter(|y| y.name() == year)
+    let y = crate::YEARS
+        .iter()
+        .filter(|y| y.name == year)
         .next();
 
     let year = match y {
@@ -36,14 +37,14 @@ pub fn run(
         None => return Err(PartNotFound::Year(year.to_owned()).into()),
     };
 
-    let d = year.days().into_iter().filter(|d| d.name() == day).next();
+    let d = year.days.into_iter().filter(|d| d.name == day).next();
 
     let day = match d {
         Some(d) => d,
         None => return Err(PartNotFound::Day(day.to_owned()).into()),
     };
 
-    let t = day.tasks().into_iter().filter(|d| d.name() == task).next();
+    let t = day.tasks.into_iter().filter(|d| d.name == task).next();
 
     let task = match t {
         Some(d) => d,
