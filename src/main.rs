@@ -12,6 +12,7 @@ mod runner {
 }
 
 static YEARS: &[&common::Year] = &[
+    &aoc_2021::YEAR,
     &aoc_2022::YEAR,
 ];
 
@@ -28,7 +29,7 @@ pub enum Args {
 }
 
 fn main() -> Result<(), anyhow::Error> {
-    if dbg!(std::env::args().count()) != 1 {
+    if std::env::args().count() != 1 {
         let args = <Args as clap::Parser>::parse();
         match args {
             Args::All(args) => runner::all::run(args)?,

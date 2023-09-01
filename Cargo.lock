@@ -7,6 +7,7 @@ name = "advent_of_code"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "aoc_2021",
  "aoc_2022",
  "clap",
  "clap_derive",
@@ -83,6 +84,17 @@ name = "anyhow"
 version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
+
+[[package]]
+name = "aoc_2021"
+version = "0.1.0"
+dependencies = [
+ "ahash",
+ "bitflags 2.4.0",
+ "common",
+ "pattern_parse",
+ "thiserror",
+]
 
 [[package]]
 name = "aoc_2022"

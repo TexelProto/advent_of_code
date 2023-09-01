@@ -1,5 +1,3 @@
-use common::input::Input;
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
 
@@ -13,6 +11,7 @@ pub fn task2(input: ()) -> Result<i32, Error> {
 
 #[cfg(test)]
 mod tests {
+    use common::input::Input;
     use super::*;
 
     const INPUT: &[u8] = "".as_bytes();

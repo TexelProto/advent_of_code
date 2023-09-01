@@ -2,13 +2,13 @@ use std::{path::PathBuf, io::BufReader};
 
 #[derive(Debug, clap_derive::Parser)]
 pub struct Args {
-    #[clap(short, long, help = "The year of the task to be run. (i.e. aoc_2022)")]
+    #[clap(help = "The year of the task to be run. (i.e. aoc_2022)")]
     year: String,
-    #[clap(short, long, help = "The day of the task to be run. (i.e. day01)")]
+    #[clap(help = "The day of the task to be run. (i.e. day01)")]
     day: String,
-    #[clap(short, long, help = "The name of the task to be run. (i.e. task1)")]
+    #[clap(help = "The name of the task to be run. (i.e. task1)")]
     task: String,
-    #[clap(short, long, help = "The path to the input file. If omitted the result will be read from stdin.")]
+    #[clap(short, long, help = "The path to the input file. If omitted it will be assumed to './inputs/YEAR/DAY.txt'.")]
     input: Option<PathBuf>,
     #[clap(short, long, help = "The path to the output file. If omitted the result will be written to stdout.")]
     _output: Option<PathBuf>,
@@ -59,8 +59,15 @@ pub fn run(args: Args) -> Result<(), Error> {
         None => return Err(PartNotFound::Task(args.task.to_owned()).into()),
     };
 
-    let file = std::fs::File::open(args.input.as_ref().unwrap())
-        .map_err(|_| Error::FileNotFound(args.input.unwrap()))?;
+    let input_path = match args.input {
+        Some(p) => p,
+        None => PathBuf::from(format!(
+            "inputs/{}/{}.txt", args.year, args.day
+        ))
+    };
+
+    let file = std::fs::File::open(&input_path)
+        .map_err(move |_| Error::FileNotFound(input_path))?;
 
     let mut buf = BufReader::new(file);
 
