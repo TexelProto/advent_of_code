@@ -53,6 +53,24 @@ impl std::fmt::Display for Task {
     }
 }
 
+#[macro_export]
+macro_rules! oneline_dbg {
+    () => {
+        eprintln!("[{}:{}]", file!(), line!())
+    };
+    ($val:expr $(,)?) => {
+        match $val {
+            tmp => {
+                eprintln!("[{}:{}] {} = {:?}",
+                    file!(), line!(), stringify!($val), &tmp);
+                tmp
+            }
+        }
+    };
+    ($($val:expr),+ $(,)?) => {
+        ($(oneline_dbg!($val)),+,)
+    };
+}
 
 #[macro_export]
 macro_rules! decl_year {

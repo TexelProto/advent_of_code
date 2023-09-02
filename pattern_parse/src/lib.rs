@@ -82,6 +82,12 @@ pub struct ParseError {
     pub position: usize,
 }
 
+impl std::error::Error for ParseError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&*self.error)
+    }
+}
+
 impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Parsing error at position {}: {}", self.position, self.error)
