@@ -37,3 +37,13 @@ macro_rules! for_input {
         }
     };
 }
+
+#[macro_export]
+macro_rules! ok_or_continue {
+    ($e:expr) => {
+        match $e {
+            Some(val) => val,
+            None => continue,
+        }
+    }
+}
