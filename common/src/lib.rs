@@ -4,7 +4,7 @@ pub mod input;
 pub mod pathfinding;
 pub mod iter_ext;
 pub mod debug;
-
+pub mod macros;
 
 #[derive(Debug)]
 pub struct Year {
@@ -54,25 +54,6 @@ impl std::fmt::Display for Task {
 }
 
 #[macro_export]
-macro_rules! oneline_dbg {
-    () => {
-        eprintln!("[{}:{}]", file!(), line!())
-    };
-    ($val:expr $(,)?) => {
-        match $val {
-            tmp => {
-                eprintln!("[{}:{}] {} = {:?}",
-                    file!(), line!(), stringify!($val), &tmp);
-                tmp
-            }
-        }
-    };
-    ($($val:expr),+ $(,)?) => {
-        ($(oneline_dbg!($val)),+,)
-    };
-}
-
-#[macro_export]
 macro_rules! decl_year {
     (
         $($day:ident {
@@ -90,7 +71,7 @@ macro_rules! decl_year {
                     name: stringify!($day),
                     tasks: &[
                         $($crate::Task {
-                            full_name: stringify!($year::$day::$task),
+                            full_name: stringify!(module_path!()::$day::$task),
                             name: stringify!($task),
                             func: & |mut read| {
                                 fn parse_input<'a, T, R>(read: &'a mut R) -> Result<T, T::Error> 
@@ -110,17 +91,5 @@ macro_rules! decl_year {
                 },)*
             ]
         };
-    };
-}
-
-
-#[macro_export]
-macro_rules! for_input {
-    ($iter:ident, |$ele:ident| $body:tt) => {
-        let mut m_iter = $iter;
-        while let Some($ele) = Iterator::next(&mut m_iter) {
-            let $ele = $ele?;
-            $body;
-        }
     };
 }
