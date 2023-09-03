@@ -2,6 +2,7 @@ pub use self::{chars::*, group::*, lines::*, separated::*};
 use std::io::BufRead;
 
 pub mod chars;
+pub mod digits;
 pub mod group;
 pub mod lines;
 pub mod separated;

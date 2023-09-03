@@ -1,4 +1,4 @@
-use common::{input::Linewise, ok_or_continue};
+use common::{input::Linewise, some_or_continue};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
@@ -114,10 +114,10 @@ fn try_grow_from(points: &mut PointSet, rows: &[Vec<u8>], x: usize, y: usize) {
 
     let val = rows[y][x];
     for (ox, oy) in OFFSETS {
-        let nx = ok_or_continue!(x.checked_add_signed(ox));
-        let ny = ok_or_continue!(y.checked_add_signed(oy));
-        let row = ok_or_continue!(rows.get(ny));
-        let cell = *ok_or_continue!(row.get(nx));
+        let nx = some_or_continue!(x.checked_add_signed(ox));
+        let ny = some_or_continue!(y.checked_add_signed(oy));
+        let row = some_or_continue!(rows.get(ny));
+        let cell = *some_or_continue!(row.get(nx));
 
         if cell != 9 && cell >= val + 1 && points.insert((nx,ny)) {
             // eprintln!("{:?} => {:?}", (x,y), (nx, ny));
