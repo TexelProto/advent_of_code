@@ -12,7 +12,7 @@ impl<T> DigitMap<T> {
 }
 
 impl<'a, T: FromStr> Input<'a> for DigitMap<T>
-    where T::Err: std::error::Error 
+    where T::Err: 'static + std::error::Error 
 {
     type Error = T::Err;
 

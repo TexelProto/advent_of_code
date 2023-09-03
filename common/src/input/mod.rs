@@ -8,7 +8,7 @@ pub mod lines;
 pub mod separated;
 
 pub trait Input<'a>: Sized {
-    type Error: std::error::Error;
+    type Error: 'static + std::error::Error;
     fn parse<R: 'a + BufRead>(read: R) -> Result<Self, Self::Error>;
 }
 

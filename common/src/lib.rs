@@ -5,6 +5,7 @@ pub mod pathfinding;
 pub mod iter_ext;
 pub mod debug;
 pub mod macros;
+pub mod geometry_2d;
 
 #[derive(Debug)]
 pub struct Year {

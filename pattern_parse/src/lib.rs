@@ -1,4 +1,4 @@
-use std::{fmt::Display, marker::PhantomData, num::ParseIntError, str::FromStr, borrow::Cow};
+use std::{fmt::Display, marker::PhantomData, num::ParseIntError, str::FromStr, borrow::Cow, convert::Infallible};
 
 pub use pattern_parse_macros::parse_fn;
 
@@ -75,6 +75,16 @@ macro_rules! impl_float_parse {
 }
 
 impl_float_parse!(f32, f64);
+
+impl PatternParse for char {
+    type Error = Infallible;
+
+    fn parse(input: &str) -> Result<(Self, usize), Self::Error> {
+        debug_assert!(input.is_ascii());
+
+        Ok((input.chars().next().unwrap(), 1))
+    }
+}
 
 #[derive(Debug)]
 pub struct ParseError {
