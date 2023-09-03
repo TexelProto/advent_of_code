@@ -39,6 +39,17 @@ macro_rules! for_input {
 }
 
 #[macro_export]
+macro_rules! for_ok {
+    ($ele:ident in $iter:ident { $body:tt }) => {
+        for $ele in $iter {
+            $ele = $ele?;
+
+            $body
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! some_or_continue {
     ($e:expr) => {
         {
