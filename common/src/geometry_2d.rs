@@ -6,6 +6,18 @@ pub struct Point {
     pub y: u32,
 }
 
+impl Point {
+    pub fn offset(p: Self, dir: Direction) -> Option<Self> {
+        let x = p.x.checked_add_signed(dir.x)?;
+        let y = p.y.checked_add_signed(dir.y)?;
+        Some(Self { x, y })
+    }
+
+    pub fn distance(p1: Self, p2: Self) -> u32 {
+        p1.x.abs_diff(p2.x) + p1.y.abs_diff(p2.y)
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum PointParseError {
     #[error("missing separator")]
