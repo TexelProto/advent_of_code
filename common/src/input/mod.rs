@@ -17,6 +17,8 @@ impl Input<'_> for String {
     fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut s = String::new();
         read.read_to_string(&mut s)?;
+        let len = s.trim_end().len();
+        s.truncate(len);
         Ok(s)
     }
 }
