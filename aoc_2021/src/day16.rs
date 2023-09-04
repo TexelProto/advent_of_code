@@ -232,7 +232,7 @@ mod tests {
         assert_eq!(test_task1_core("A0016C880162017C3686B18A3D4780"), 31);
     }
     
-    fn test_task2_core(s: &str) -> u32 {
+    fn test_task2_core(s: &str) -> u64 {
         let buf = std::io::BufReader::new(s.as_bytes());
         let result = task2(Input::parse(buf).unwrap());
         result.unwrap()
