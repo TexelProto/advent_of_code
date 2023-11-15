@@ -57,14 +57,20 @@ impl std::fmt::Display for Task {
 #[macro_export]
 macro_rules! decl_year {
     (
-        $($day:ident {
-            $(
-                $(#[$attr:ident])*
-                $task:ident;
-            )*
-        })*
+        $(
+            $(#[doc($path:literal)])?
+            $day:ident {
+                $(
+                    $(#[$attr:ident])*
+                    $task:ident;
+                )*
+            }
+        )*
     ) => {
-        $( pub mod $day; )*
+        $(
+            $(#[doc = include_str!($path)])?
+            pub mod $day;
+        )*
         pub static YEAR: $crate::Year = $crate::Year {
             name: module_path!(),
             days: &[
