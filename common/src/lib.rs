@@ -71,6 +71,8 @@ macro_rules! decl_year {
             $(#[doc = include_str!($path)])?
             pub mod $day;
         )*
+
+        #[doc(hidden)]
         pub static YEAR: $crate::Year = $crate::Year {
             name: module_path!(),
             days: &[

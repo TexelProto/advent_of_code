@@ -12,7 +12,7 @@ pub fn run(_: Args) -> Result<(), Infallible> {
         .iter()
         .flat_map(|y| {
             y.days.iter().flat_map(|d| {
-                let mut path = PathBuf::from_iter(["inputs", y.name, d.name]);
+                let mut path = PathBuf::from_iter([y.name, "inputs", d.name]);
                 path.set_extension("txt");
                 d.tasks.iter().map(move |t| (t, path.clone()))
             })

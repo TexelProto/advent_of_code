@@ -377,7 +377,7 @@ mod tests {
     use super::*;
 
     const SIDE_LEN: usize = 50;
-    const INPUT: &str = include_str!("../../inputs/aoc_2022/day22.txt");
+    const INPUT: &str = include_str!("../inputs/day22.txt");
 
     const DIRECTIONS: [Direction; 4] = [
         Direction::Right,

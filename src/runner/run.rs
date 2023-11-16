@@ -1,17 +1,19 @@
 use std::{path::PathBuf, io::BufReader};
+use std::fs::File;
+use std::io::stdout;
 
 #[derive(Debug, clap_derive::Parser)]
 pub struct Args {
-    #[clap(help = "The year of the task to be run. (i.e. aoc_2022)")]
+    #[clap(help = "The year of the task to be run. (i.e. inputs)")]
     year: String,
     #[clap(help = "The day of the task to be run. (i.e. day01)")]
     day: String,
     #[clap(help = "The name of the task to be run. (i.e. task1)")]
     task: String,
-    #[clap(short, long, help = "The path to the input file. If omitted it will be assumed to './inputs/YEAR/DAY.txt'.")]
+    #[clap(short, long, help = "The path to the input file. If omitted it will be assumed to './YEAR/inputs/DAY.txt'.")]
     input: Option<PathBuf>,
     #[clap(short, long, help = "The path to the output file. If omitted the result will be written to stdout.")]
-    _output: Option<PathBuf>,
+    output: Option<PathBuf>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -62,11 +64,11 @@ pub fn run(args: Args) -> Result<(), Error> {
     let input_path = match args.input {
         Some(p) => p,
         None => PathBuf::from(format!(
-            "inputs/{}/{}.txt", args.year, args.day
+            "{}/inputs/{}.txt", args.year, args.day
         ))
     };
 
-    let file = std::fs::File::open(&input_path)
+    let file = File::open(&input_path)
         .map_err(move |_| Error::FileNotFound(input_path))?;
 
     let mut buf = BufReader::new(file);
@@ -75,6 +77,23 @@ pub fn run(args: Args) -> Result<(), Error> {
     let result = task.run(&mut buf);
     let elapsed = time.elapsed();
 
-    println!("{}", crate::format_detailed(result, task, elapsed));
+    let mut file_out;
+    let mut std_out;
+    let output: &mut dyn std::io::Write;
+    match args.output {
+        None => {
+            std_out = stdout().lock();
+            output = &mut std_out;
+        },
+        Some(path) => match File::open(path.clone()) {
+            Err(e) => return Err(Error::IoError(e)),
+            Ok(f) => {
+                file_out = f;
+                output = &mut file_out;
+            },
+        }
+    };
+
+    write!(output, "{}", crate::format_detailed(result, task, elapsed))?;
     Ok(())
 }

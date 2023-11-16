@@ -262,7 +262,6 @@ pub fn task2(input: Linewise<SnailfishTree>) -> Result<u32, Error> {
 mod tests {
     use super::*;
     use common::input::Input;
-    use pattern_parse::PatternParse;
 
     const INPUT: &[u8] = b"\
 [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
@@ -333,6 +332,6 @@ mod tests {
         let buf = std::io::BufReader::new(INPUT);
         let result = task2(Input::parse(buf).unwrap());
         let val = result.unwrap();
-        assert_eq!(val, 0);
+        assert_eq!(val, 3993);
     }
 }

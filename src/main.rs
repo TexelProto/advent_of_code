@@ -29,7 +29,7 @@ pub enum Args {
 }
 
 fn main() -> Result<(), anyhow::Error> {
-    if std::env::args().count() != 1 {
+    if std::env::args().count() > 1 {
         let args = <Args as clap::Parser>::parse();
         match args {
             Args::All(args) => runner::all::run(args)?,
