@@ -32,7 +32,7 @@ impl std::fmt::Display for Day {
 
 type TaskFn = dyn Sync + Fn(&mut dyn BufRead) -> Result<String, String>;
 pub struct Task {
-    pub full_name: &'static str,
+    pub module: &'static str,
     pub name: &'static str,
     pub func: &'static TaskFn,
 }
@@ -44,7 +44,8 @@ impl Task {
 impl Debug for Task {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Task")
-            .field("full_name", &self.full_name)
+            .field("module", &self.module)
+            .field("name", &self.name)
             .finish()
     }
 }
@@ -80,7 +81,7 @@ macro_rules! decl_year {
                     name: stringify!($day),
                     tasks: &[
                         $($crate::Task {
-                            full_name: stringify!(module_path!()::$day::$task),
+                            module: module_path!(),
                             name: stringify!($task),
                             func: & |mut read| {
                                 fn parse_input<'a, T, R>(read: &'a mut R) -> Result<T, T::Error> 

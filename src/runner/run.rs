@@ -94,6 +94,6 @@ pub fn run(args: Args) -> Result<(), Error> {
         }
     };
 
-    write!(output, "{}", crate::format_detailed(result, task, elapsed))?;
+    write!(output, "{}", crate::format_detailed(result, year, day, task, elapsed))?;
     Ok(())
 }

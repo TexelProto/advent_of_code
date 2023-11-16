@@ -1,6 +1,7 @@
 #![deny(private_in_public)]
 
 use std::time::Duration;
+use common::*;
 
 mod runner {
     #[cfg(feature = "parallel")]
@@ -67,14 +68,16 @@ fn format_duration(duration: Duration) -> String {
     }
 }
 
-fn format_detailed(res: Result<String, String>, task: &common::Task, duration: Duration) -> String {
+fn format_detailed(res: Result<String, String>, y: &Year, d: &Day, t: &Task, duration: Duration) -> String {
     let (status, message) = match res {
         Ok(ok) => ("OK ", ok),
         Err(e) => ("ERR", e),
     };
 
     let duration = format_duration(duration);
-    let name = task.full_name;
+    let year = y.name;
+    let day = d.name;
+    let task = t.name;
 
-    format!("{status} [{duration:9}] {name:26} {message}")
+    format!("{status} [{duration:9}] {year:8}::{day:0>5}::{task:5} {message}")
 }
