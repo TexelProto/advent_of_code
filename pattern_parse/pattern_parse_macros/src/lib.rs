@@ -168,6 +168,20 @@ fn parse_fn_core(decl: DeclPattern) -> Result<impl quote::ToTokens, Box<dyn Erro
     Ok(func)
 }
 
+/// Macro for generating a parsing function
+///
+/// The first item is the identifier the generated function should have.
+/// The second item must be a string literal representing the parsing.
+/// - Sections to be parsed into a value are represented by the type name enclosed in `{}` braces.
+/// - All non parsed sections must be an exact match
+/// - The function returns a tuple containing all parsed values in order
+///
+/// Examples:
+///
+/// ```
+/// // becomes fn parse(s: &str) -> Result<(i32, i32, i32, i32), pattern_parse::ParseError>
+/// pattern_parse::parse_fn!(parse, "target area: x={i32}..{i32}, y={i32}..{i32}");
+/// ```
 #[proc_macro]
 pub fn parse_fn(stream: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let decl = syn::parse_macro_input!(stream as DeclPattern);

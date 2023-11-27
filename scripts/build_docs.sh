@@ -1,0 +1,1 @@
+cargo doc --open --no-deps -p aoc_2022 -p aoc_2021 -p common -p pattern_parse -p advent_of_code

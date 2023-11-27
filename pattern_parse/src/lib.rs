@@ -1,23 +1,20 @@
+//! A crate to provide a macro to simplify parsing certain values from a larger string
+//!
+//! There currently only exists the [`parse_fn`] macro.
+
 use std::{fmt::Display, marker::PhantomData, num::ParseIntError, str::FromStr, borrow::Cow, convert::Infallible};
 
 pub use pattern_parse_macros::parse_fn;
 
+/// Core trait for parsable items
 pub trait PatternParse: Sized {
     type Error: std::error::Error;
+
+    /// Parses a string `s` to return a value of this type and the number of characters consumed.
+    ///
+    /// If the string is ill-formatted return an error specific to the
+    /// inside [`Err`]. The error type is specific to the implementation of the trait.
     fn parse(input: &str) -> Result<(Self, usize), Self::Error>;
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Literal(Cow<'static, str>);
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Parse<T: FromStr>(PhantomData<T>);
-
-pub fn literal(s: impl Into<Cow<'static, str>>) -> Literal {
-    Literal(s.into())
-}
-pub fn parse<T: FromStr>() -> Parse<T> {
-    Parse(PhantomData::<T>::default())
 }
 
 macro_rules! impl_uint_parse {

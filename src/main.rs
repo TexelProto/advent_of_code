@@ -1,5 +1,8 @@
 #![deny(private_in_public)]
 
+pub use aoc_2021;
+pub use aoc_2022;
+
 use std::time::Duration;
 use common::*;
 

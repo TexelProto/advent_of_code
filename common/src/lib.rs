@@ -62,7 +62,7 @@ macro_rules! decl_year {
             $(#[doc($path:literal)])?
             $day:ident {
                 $(
-                    $(#[$attr:ident])*
+                    $(#[$attr:meta])*
                     $task:ident;
                 )*
             }
@@ -84,17 +84,13 @@ macro_rules! decl_year {
                             module: module_path!(),
                             name: stringify!($task),
                             func: & |mut read| {
-                                fn parse_input<'a, T, R>(read: &'a mut R) -> Result<T, T::Error> 
-                                    where T: $crate::input::Input<'a>, R: 'a + std::io::BufRead
-                                {
-                                    T::parse(read)
+                                match $crate::input::Input::parse(&mut read) {
+                                    Ok(input) => match $day :: $task (input) {
+                                        Ok(res) => Ok(format!("{}", res)),
+                                        Err(err) => Err(format!("{}", err)),
+                                    },
+                                    Err(err) => Err(format!("{}", err)),
                                 }
-
-                                let result: Result<_,_> = parse_input(&mut read);
-                                let input = result.map_err(|e| format!("{}", e))?;
-                                let result: Result<_, _> = $day :: $task (input);
-                                result.map(|x| format!("{}", x))
-                                    .map_err(|e| format!("{}", e))
                             }
                         },)*
                     ]
