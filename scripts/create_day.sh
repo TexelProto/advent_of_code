@@ -16,7 +16,7 @@ if [ ! -d "$1" ]; then
     exit 1
 fi
 
-cp "_daytemplate.rs" "$1/src/$2.rs"
+cp "scripts/_daytemplate.rs" "$1/src/$2.rs"
 echo "Created ./$1/src/$2.rs"
 
 touch "$1/inputs/$2.txt"
