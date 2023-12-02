@@ -2,6 +2,7 @@
 
 pub use aoc_2021;
 pub use aoc_2022;
+pub use aoc_2023;
 
 use std::time::Duration;
 use common::*;
@@ -18,6 +19,7 @@ mod runner {
 static YEARS: &[&common::Year] = &[
     &aoc_2021::YEAR,
     &aoc_2022::YEAR,
+    &aoc_2023::YEAR,
 ];
 
 #[derive(Debug, clap_derive::Parser)]
