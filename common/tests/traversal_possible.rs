@@ -1,4 +1,4 @@
-use advent_of_code::common::pathfinding as pf;
+use common::pathfinding as pf;
 use pf::*;
 
 const MAP: Map = Map([[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0]]);

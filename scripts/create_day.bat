@@ -18,10 +18,10 @@ if not exist "%~1" (
     exit /b 1
 )
 
-echo D | xcopy "_daytemplate.rs" "%1\src\%2.rs" /I /Y
+echo D | xcopy ".\scripts\_daytemplate.rs" ".\%1\src\%2.rs" /I /Y
 echo "Created ./%1/src/%2.rs"
 
-copy NUL "inputs/%1/%2.txt"
+copy NUL ".\inputs\%1\%2.txt"
 echo "Created ./inputs/%1/%2.txt"
 
 endlocal

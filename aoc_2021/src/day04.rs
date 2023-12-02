@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use common::{iter_ext::try_collect, input::Multiline, debug::BinDebug};
+use common::{iter_ext::TryIterator, input::Multiline, debug::BinDebug};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -100,10 +100,10 @@ impl<'a> common::input::Input<'a> for Input {
         // read the line containing all the called numbers
         let mut line = String::new();
         read.read_line(&mut line)?;
-        let numbers = try_collect(
+        let numbers =
             line.split(',')
             .map(|s| u8::from_str(s.trim()))
-        )?;
+            .try_collect2()?;
 
         // blank line separating 
         line.clear();
@@ -111,7 +111,7 @@ impl<'a> common::input::Input<'a> for Input {
 
         let multiline = Multiline::<Board, 5, true>::parse(read)
             .unwrap();
-        let boards = try_collect(multiline)?;
+        let boards = multiline.try_collect2()?;
 
         Ok(Self { numbers, boards })
     }

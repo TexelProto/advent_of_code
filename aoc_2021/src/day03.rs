@@ -1,6 +1,6 @@
 use std::{str::FromStr, num::ParseIntError};
 
-use common::{input::Linewise, iter_ext::try_collect};
+use common::{input::Linewise, iter_ext::TryIterator};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
@@ -60,7 +60,7 @@ pub fn task2(input: Linewise<Number>) -> Result<u32, ParseIntError> {
 }
 
 fn task2_core<const WIDTH: usize>(input: Linewise<Number>) -> Result<u32, ParseIntError> {
-    let numbers: Vec<_> = try_collect(input)?;
+    let numbers: Vec<_> = input.try_collect2()?;
 
     let mut o2_numbers = numbers.clone();
     filter_list::<WIDTH>(&mut o2_numbers, false);

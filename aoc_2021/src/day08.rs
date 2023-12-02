@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use common::{iter_ext::try_collect, input::Linewise};
+use common::{iter_ext::TryIterator, input::Linewise};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -70,8 +70,8 @@ impl FromStr for Input {
             .map(Segments::from_str);
         
         Ok(Self {
-            examples: try_collect(examples)?,
-            active: try_collect(active)?
+            examples: examples.try_collect2()?,
+            active: active.try_collect2()?
         })
     }
 }

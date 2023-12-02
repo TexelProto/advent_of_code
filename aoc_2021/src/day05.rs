@@ -1,6 +1,6 @@
 use std::{str::FromStr, cmp::Ordering};
 
-use common::{input::Linewise, iter_ext::try_collect};
+use common::{input::Linewise, iter_ext::TryIterator};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -82,7 +82,7 @@ impl Iterator for PointsIter {
 }
 
 pub fn task1(input: Linewise<Line>) -> Result<usize, Error> {
-    let mut lines: Vec<_> = try_collect(input)?;
+    let mut lines: Vec<_> = input.try_collect2()?;
     lines.retain(|l| l.is_horizontal() || l.is_vertical());
     let points = lines.iter()
         .map(|l| l.covered_points())
@@ -104,7 +104,7 @@ pub fn task1(input: Linewise<Line>) -> Result<usize, Error> {
 }
 
 pub fn task2(input: Linewise<Line>) -> Result<usize, Error> {
-    let lines: Vec<_> = try_collect(input)?;
+    let lines: Vec<_> = input.try_collect2()?;
     let points = lines.iter()
         .map(|l| l.covered_points())
         .collect::<Vec<_>>();

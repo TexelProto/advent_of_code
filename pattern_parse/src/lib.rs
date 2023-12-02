@@ -2,7 +2,7 @@
 //!
 //! There currently only exists the [`parse_fn`] macro.
 
-use std::{fmt::Display, marker::PhantomData, num::ParseIntError, str::FromStr, borrow::Cow, convert::Infallible};
+use std::{fmt::Display, num::ParseIntError, str::FromStr, borrow::Cow, convert::Infallible};
 
 pub use pattern_parse_macros::parse_fn;
 

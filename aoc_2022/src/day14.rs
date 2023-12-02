@@ -3,7 +3,7 @@ use std::io::BufRead;
 use std::num::ParseIntError;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
-use  common::iter_ext::try_collect;
+use common::iter_ext::TryIterator;
 use common::input::{Input, parse_lines};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -38,6 +38,7 @@ impl Deref for Map {
         &self.0
     }
 }
+
 impl DerefMut for Map {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
@@ -48,9 +49,9 @@ impl Input<'_> for Map {
     type Error = Error;
     fn parse<R: BufRead>(mut read: R) -> Result<Self, Self::Error> {
         let mut data = [[Tile::Empty; HEIGHT]; WIDTH];
-        
+
         parse_lines::<Error>(&mut read, |line| {
-            let points: Vec<_> = try_collect(parse_line(line))?;
+            let points: Vec<_> = parse_line(line).try_collect2()?;
             for pair in points.windows(2) {
                 let (x0, y0) = pair[0];
                 let (x1, y1) = pair[1];
@@ -67,7 +68,7 @@ impl Input<'_> for Map {
             }
             Ok(())
         })?;
-        
+
         Ok(Self(data))
     }
 }
@@ -131,7 +132,7 @@ fn drop_sand_particle(map: &Map) -> Result<(usize, usize), Error> {
     Ok(point)
 }
 
-pub fn task1(mut map: Map) -> Result<u64, Error>{
+pub fn task1(mut map: Map) -> Result<u64, Error> {
     let mut count = 0_u64;
     loop {
         if map[SPAWN_POINT_X][SPAWN_POINT_Y] != Tile::Empty {
@@ -140,7 +141,7 @@ pub fn task1(mut map: Map) -> Result<u64, Error>{
 
         let point = match drop_sand_particle(&map) {
             Ok(point) => point,
-            Err(e) => match e { 
+            Err(e) => match e {
                 Error::OutOfBoundsError => break,
                 _ => return Err(e),
             },
@@ -153,7 +154,7 @@ pub fn task1(mut map: Map) -> Result<u64, Error>{
     Ok(count)
 }
 
-pub fn task2(mut map: Map) -> Result<u64, Error>{
+pub fn task2(mut map: Map) -> Result<u64, Error> {
     let floor_height = (0..HEIGHT).rev().filter(|y| {
         (0..WIDTH).any(|x| map[x][*y] == Tile::Wall)
     }).next().unwrap() + 2;

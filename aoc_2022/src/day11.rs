@@ -1,6 +1,6 @@
 use std::{cell::RefCell, str::FromStr, fmt::Debug, num::ParseIntError};
 
-use common::{input::Multiline, iter_ext::try_collect};
+use common::{input::Multiline, iter_ext::TryIterator};
 
 #[derive(Debug)]
 pub enum OpValue {
@@ -166,7 +166,7 @@ fn run_round(monkeys: &mut Vec<Monkey>, common_factor: u64) {
 }
 
 pub fn task1(monkeys: Multiline<Monkey, 6, true>) -> Result<usize, Error> {
-    let mut monkeys: Vec<_> = try_collect(monkeys)?;
+    let mut monkeys: Vec<_> = monkeys.try_collect2()?;
     let common_factor = monkeys.iter().map(|m| m.test).product::<u64>();
     for _ in 0..20 {
         run_round(&mut monkeys, common_factor);
@@ -178,7 +178,7 @@ pub fn task1(monkeys: Multiline<Monkey, 6, true>) -> Result<usize, Error> {
 }
 
 pub fn task2(monkeys: Multiline<Monkey, 6, true>) -> Result<usize, Error> {
-    let mut monkeys: Vec<_> = try_collect(monkeys)?;
+    let mut monkeys: Vec<_> = monkeys.try_collect2()?;
     let common_factor = monkeys.iter().map(|m| m.test).product::<u64>();
     for _ in 0..10_000 {
         run_round(&mut monkeys, common_factor);

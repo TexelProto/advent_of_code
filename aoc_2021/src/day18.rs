@@ -2,7 +2,7 @@ use std::{fmt::Display, str::FromStr};
 use std::fmt::Write;
 
 use common::input::Linewise;
-use common::iter_ext::try_collect;
+use common::iter_ext::TryIterator;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -242,7 +242,7 @@ pub fn task1(mut input: Linewise<SnailfishTree>) -> Result<u32, Error> {
 }
 
 pub fn task2(input: Linewise<SnailfishTree>) -> Result<u32, Error> {
-    let inputs: Vec<_> = try_collect(input)?;
+    let inputs: Vec<_> = input.try_collect2()?;
     let count = inputs.len();
 
     let mut max = 0;

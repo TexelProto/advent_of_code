@@ -1,4 +1,4 @@
-use common::{input::Linewise, iter_ext::try_collect};
+use common::{input::Linewise, iter_ext::TryIterator};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -7,13 +7,13 @@ pub enum Error {
 }
 
 pub fn task1(input: Linewise<u32>) -> Result<usize, Error> {
-    let vec: Vec<_> = try_collect(input)?;
+    let vec: Vec<_> = input.try_collect2()?;
     let count = vec.windows(2).filter(|w| w[1] > w[0]).count();
     Ok(count)
 }
 
 pub fn task2(input: Linewise<u32>) -> Result<usize, Error> {
-    let vec: Vec<_> = try_collect(input)?;
+    let vec: Vec<_> = input.try_collect2()?;
     let windows: Vec<_> = vec.windows(3)
         .map(|w| w.iter().sum::<u32>())
         .collect();

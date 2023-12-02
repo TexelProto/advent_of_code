@@ -1,4 +1,4 @@
-use common::{input::CommaSeparated, iter_ext::try_collect};
+use common::{input::CommaSeparated, iter_ext::TryIterator};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -7,7 +7,7 @@ pub enum Error {
 }
 
 pub fn task1(input: CommaSeparated<u16>) -> Result<u32, Error> {
-    let locations: Vec<_> = try_collect(input)?;
+    let locations: Vec<_> = input.try_collect2()?;
 
     let (max, min) = locations.iter()
         .cloned()
@@ -34,7 +34,7 @@ pub fn task1(input: CommaSeparated<u16>) -> Result<u32, Error> {
 }
 
 pub fn task2(input: CommaSeparated<u16>) -> Result<u32, Error> {
-    let locations: Vec<_> = try_collect(input)?;
+    let locations: Vec<_> = input.try_collect2()?;
 
     let (max, min) = locations.iter()
         .cloned()

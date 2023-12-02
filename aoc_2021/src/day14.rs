@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use common::{
     input::{LineSeparated, Linewise},
-    iter_ext::try_collect
+    iter_ext::TryIterator
 };
 
 #[derive(Debug, thiserror::Error)]
@@ -35,7 +35,7 @@ impl FromStr for Rule {
 pub fn task1<'a>(input: LineSeparated<'a, String, Linewise<'a, Rule>>) -> Result<i32, Error> {
     let (line, rules) = input.into_inner();
     let mut line = line.into_bytes();
-    let rules: Vec<_> = try_collect(rules)?;
+    let rules: Vec<_> = rules.try_collect2()?;
 
     for _ in 0..10 {
         let mut next = vec![];
@@ -71,7 +71,7 @@ pub fn task1<'a>(input: LineSeparated<'a, String, Linewise<'a, Rule>>) -> Result
 pub fn task2<'a>(input: LineSeparated<'a, String, Linewise<'a, Rule>>) -> Result<u64, Error> {
     let (line, rules) = input.into_inner();
     let line = line.into_bytes();
-    let rules: Vec<_> = try_collect(rules)?;
+    let rules: Vec<_> = rules.try_collect2()?;
 
     // divide the input into pairs (keep in mind the pairs overlap)
     // ie NNCB => [NN, NC, CB]

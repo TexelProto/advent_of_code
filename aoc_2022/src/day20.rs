@@ -1,4 +1,4 @@
-use common::{iter_ext::try_collect, input::Linewise};
+use common::{iter_ext::TryIterator, input::Linewise};
 
 pub fn task1(input: Linewise<i128>) -> Result<i128, std::num::ParseIntError> {
     let mut nums = vec![];
@@ -21,7 +21,7 @@ pub fn task1(input: Linewise<i128>) -> Result<i128, std::num::ParseIntError> {
 pub fn task2(input: Linewise<i128>) -> Result<i128, std::num::ParseIntError> {
     const DECRYPT_KEY: i128 = 811589153;
 
-    let original: Vec<_> = try_collect(input)?;
+    let original: Vec<_> = input.try_collect2()?;
     let len = original.len();
 
     let mut shift: Vec<_> = original

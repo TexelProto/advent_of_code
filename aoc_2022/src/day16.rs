@@ -4,7 +4,7 @@ use std::{str::FromStr, num::ParseIntError, collections::HashMap};
 
 use rayon::prelude::{ParallelIterator, IntoParallelIterator};
 
-use  common::iter_ext::try_collect;
+use  common::iter_ext::TryIterator;
 use common::input::Linewise;
 use  common::pathfinding::{self as pf, Algorithm};
 
@@ -163,7 +163,7 @@ fn traverse_masked_map<const MAX: usize>(step: usize, valve: &Valve, mut acc: us
 }
 
 pub fn task1(valves: Linewise<Valve>) -> Result<usize, Error> {
-    let valves = try_collect(valves)?;
+    let valves = valves.try_collect2()?;
     let map = Map::from_valves(valves);
 
     let mut visited = HashSet::new();
@@ -176,7 +176,7 @@ pub fn task1(valves: Linewise<Valve>) -> Result<usize, Error> {
 }
 
 pub fn task2(valves: Linewise<Valve>) -> Result<usize, Error> {
-    let valves = try_collect(valves)?;
+    let valves = valves.try_collect2()?;
     let map = Map::from_valves(valves);
 
     let root_name = encode_name("AA");

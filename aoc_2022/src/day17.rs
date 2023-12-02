@@ -1,7 +1,7 @@
 use std::collections::hash_map::Entry;
 
 use common::{
-    iter_ext::try_collect,
+    iter_ext::TryIterator,
     input::{
         chars::{Charwise, FromChar},
         lines::Linewise,
@@ -165,7 +165,7 @@ fn drop_shape(
 
 pub fn task1(chars: Linewise<Charwise<Shift>>) -> Result<usize, Error> {
     let shapes = SHAPES.iter().cycle();
-    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
+    let shifts: Vec<_> = chars.flat_map(|r| r.unwrap()).try_collect2()?;
     let mut shift_index = 0;
 
     let mut occupied = vec![];
@@ -188,7 +188,7 @@ struct CacheKey {
 const CACHE_KEY_SIZE: usize = 23;
 
 pub fn task2(chars: Linewise<Charwise<Shift>>) -> Result<u64, Error> {
-    let shifts: Vec<_> = try_collect(chars.flat_map(|r| r.unwrap()))?;
+    let shifts: Vec<_> = chars.flat_map(|r| r.unwrap()).try_collect2()?;
     let mut shift_index = 0;
 
     let mut cache = HashMap::<CacheKey, _>::new();
