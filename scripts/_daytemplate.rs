@@ -14,7 +14,8 @@ mod tests {
     use common::input::Input;
     use super::*;
 
-    const INPUT: &[u8] = "".as_bytes();
+    const INPUT: &[u8] = b"\
+";
 
     #[test]
     fn test_task1() {

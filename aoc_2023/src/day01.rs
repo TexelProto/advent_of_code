@@ -9,18 +9,16 @@ pub enum Error {
 /// Find and parse the first and last digit in each line
 pub fn task1(input: Linewise<String>) -> Result<u32, Error> {
     let mut total = 0u32;
-    for (i,line) in input.enumerate() {
+    for (i, line) in input.enumerate() {
         let line = line.unwrap();
 
         let first = line.chars()
-            .filter(|c| char::is_digit(*c, 10))
-            .map(|c| c as u8 - b'0')
+            .filter_map(|c| c.to_digit(10))
             .next()
             .ok_or(Error::MissingDigit(i))?;
 
         let last = line.chars().rev()
-            .filter(|c| char::is_digit(*c, 10))
-            .map(|c| c as u8 - b'0')
+            .filter_map(|c| c.to_digit(10))
             .next()
             .ok_or(Error::MissingDigit(i))?;
 
@@ -32,7 +30,7 @@ pub fn task1(input: Linewise<String>) -> Result<u32, Error> {
 fn try_read_number(s: &str) -> Option<u32> {
     let c = s.chars().next().unwrap();
     if char::is_digit(c, 10) {
-        let value = (c as u8 - b'0') as u32;
+        let value = c.to_digit(10).unwrap();
         return Some(value);
     }
 

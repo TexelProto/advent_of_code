@@ -11,7 +11,7 @@ pub enum Error {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Number {
-    val: u32,
+    value: u32,
     line: usize,
     start: usize,
     end: usize,
@@ -31,7 +31,7 @@ impl Ord for Number {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Symbol {
-    val: u8,
+    value: u8,
     line: usize,
     pos: usize,
 }
@@ -64,10 +64,10 @@ fn parse_input(input: Linewise<String>) -> Result<(Vec<Number>, Vec<Symbol>), Er
             } else if is_digit(c) {
                 let num_len = bytes[cursor..].iter().take_while(|c| is_digit(**c)).count();
                 let num = u32::from_str(&line[cursor..cursor + num_len])?;
-                numbers.push(Number { val: num, line: i, start: cursor, end: cursor + num_len - 1 });
+                numbers.push(Number { value: num, line: i, start: cursor, end: cursor + num_len - 1 });
                 cursor += num_len;
             } else {
-                symbols.push(Symbol { val: bytes[cursor], line: i, pos: cursor });
+                symbols.push(Symbol { value: bytes[cursor], line: i, pos: cursor });
                 cursor += 1;
             }
         }
@@ -89,24 +89,31 @@ pub fn task1(input: Linewise<String>) -> Result<u32, Error> {
         find_neighbors_in_row(&numbers, symbol.line + 1, symbol.pos, &mut neighbors);
 
         for i in neighbors.iter() {
-            total += numbers[*i].val;
+            total += numbers[*i].value;
         }
     }
 
     Ok(total)
 }
 
+/// Searches for numbers that overlap pos or are off by one. Found indices are added to `out`
 fn find_neighbors_in_row(numbers: &Vec<Number>, line: usize, pos: usize, out: &mut Vec<usize>) {
     // make up a number to search for
-    let target = Number { val: 0, line, start: pos, end: pos };
+    let target = Number { value: 0, line, start: pos, end: pos };
 
     match numbers.binary_search(&target) {
         Ok(i) => {
-            // found number starting right at pos there can be no other neighbors
+            // found number starting right at pos there can be no other neighbors i.e.
+            // ..12
+            //   ^
+            //  pos
             out.push(i);
         }
         Err(i) => {
             // i is the index of the first number starting after pos. i might be the right neighbor still
+            // ...1
+            //   ^
+            //  pos
             let num_i = &numbers[i];
             if num_i.line == line && num_i.start == pos + 1 {
                 out.push(i);
@@ -115,6 +122,8 @@ fn find_neighbors_in_row(numbers: &Vec<Number>, line: usize, pos: usize, out: &m
             // there can still be a number before i
             if let Some(prev) = i.checked_sub(1) {
                 // check if the end is no more then 1 unit away in any direction
+                // this only works since numbers are at most 3 digits long
+                // for longer numbers it would be possible a number starts and ends "out of view"
                 let num_prev = numbers[prev];
                 let diff = num_prev.end.abs_diff(pos);
                 if num_prev.line == line && diff <= 1 {
@@ -126,7 +135,7 @@ fn find_neighbors_in_row(numbers: &Vec<Number>, line: usize, pos: usize, out: &m
 }
 
 fn is_digit(c: u8) -> bool {
-    c >= b'0' && c <= b'9'
+    (c as char).is_digit(10)
 }
 
 pub fn task2(input: Linewise<String>) -> Result<u32, Error> {
@@ -135,7 +144,7 @@ pub fn task2(input: Linewise<String>) -> Result<u32, Error> {
     let mut total = 0;
     let mut neighbors = vec![];
     for symbol in symbols {
-        if symbol.val != b'*' {
+        if symbol.value != b'*' {
             continue;
         }
 
@@ -150,7 +159,7 @@ pub fn task2(input: Linewise<String>) -> Result<u32, Error> {
             continue;
         }
 
-        total += numbers[neighbors[0]].val * numbers[neighbors[1]].val;
+        total += numbers[neighbors[0]].value * numbers[neighbors[1]].value;
     }
 
     Ok(total)
