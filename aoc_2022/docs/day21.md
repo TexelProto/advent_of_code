@@ -17,7 +17,7 @@ For example:
 
 
 
-```
+```ignore
 root: pppw + sjmn
 dbpl: 5
 cczh: sllz + lgvd
@@ -46,13 +46,13 @@ Each line contains the name of a monkey, a colon, and then the job of that monke
 * Job `aaaa / bbbb` will yell `aaaa`'s number divided by `bbbb`'s number.
 
 
-So, in the above example, monkey `drzm` has to wait for monkeys `hmdt` and `zczc` to yell their numbers. Fortunately, both `hmdt` and `zczc` have jobs that involve simply yelling a single number, so they do this immediately: `32` and `2`. Monkey `drzm` can then yell its number by finding `32` minus `2`: `*30*`.
+So, in the above example, monkey `drzm` has to wait for monkeys `hmdt` and `zczc` to yell their numbers. Fortunately, both `hmdt` and `zczc` have jobs that involve simply yelling a single number, so they do this immediately: `32` and `2`. Monkey `drzm` can then yell its number by finding `32` minus `2`: **`30`**.
 
 
-Then, monkey `sjmn` has one of its numbers (`30`, from monkey `drzm`), and already has its other number, `5`, from `dbpl`. This allows it to yell its own number by finding `30` multiplied by `5`: `*150*`.
+Then, monkey `sjmn` has one of its numbers (`30`, from monkey `drzm`), and already has its other number, `5`, from `dbpl`. This allows it to yell its own number by finding `30` multiplied by `5`: **`150`**.
 
 
-This process continues until `root` yells a number: `*152*`.
+This process continues until `root` yells a number: **`152`**.
 
 
 However, your actual situation involves considerably more monkeys. *What number will the monkey named `root` yell?*
@@ -70,7 +70,7 @@ First, you got the wrong job for the monkey named `root`; specifically, you got 
 Second, you got the wrong monkey for the job starting with `humn:`. It isn't a monkey - it's *you*. Actually, you got the job wrong, too: you need to figure out *what number you need to yell* so that `root`'s equality check passes. (The number that appears after `humn:` in your input is now irrelevant.)
 
 
-In the above example, the number you need to yell to pass `root`'s equality test is `*301*`. (This causes `root` to get the same number, `150`, from both of its monkeys.)
+In the above example, the number you need to yell to pass `root`'s equality test is **`301`**. (This causes `root` to get the same number, `150`, from both of its monkeys.)
 
 
 *What number do you yell to pass `root`'s equality test?*

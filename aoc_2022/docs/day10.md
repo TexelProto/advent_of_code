@@ -27,7 +27,7 @@ Consider the following small program:
 
 
 
-```
+```ignore
 noop
 addx 3
 addx -5
@@ -51,7 +51,7 @@ For example, consider this larger program:
 
 
 
-```
+```ignore
 addx 15
 addx -11
 addx 6
@@ -205,14 +205,14 @@ The interesting signal strengths can be determined as follows:
 
 
 * During the 20th cycle, register `X` has the value `21`, so the signal strength is 20 \* 21 = *420*. (The 20th cycle occurs in the middle of the second `addx -1`, so the value of register `X` is the starting value, `1`, plus all of the other `addx` values up to that point: 1 + 15 - 11 + 6 - 3 + 5 - 1 - 8 + 13 + 4 = 21.)
-* During the 60th cycle, register `X` has the value `19`, so the signal strength is 60 \* 19 = `*1140*`.
-* During the 100th cycle, register `X` has the value `18`, so the signal strength is 100 \* 18 = `*1800*`.
-* During the 140th cycle, register `X` has the value `21`, so the signal strength is 140 \* 21 = `*2940*`.
-* During the 180th cycle, register `X` has the value `16`, so the signal strength is 180 \* 16 = `*2880*`.
-* During the 220th cycle, register `X` has the value `18`, so the signal strength is 220 \* 18 = `*3960*`.
+* During the 60th cycle, register `X` has the value `19`, so the signal strength is 60 \* 19 = **`1140`**.
+* During the 100th cycle, register `X` has the value `18`, so the signal strength is 100 \* 18 = **`1800`**.
+* During the 140th cycle, register `X` has the value `21`, so the signal strength is 140 \* 21 = **`2940`**.
+* During the 180th cycle, register `X` has the value `16`, so the signal strength is 180 \* 16 = **`2880`**.
+* During the 220th cycle, register `X` has the value `18`, so the signal strength is 220 \* 18 = **`3960`**.
 
 
-The sum of these signal strengths is `*13140*`.
+The sum of these signal strengths is **`13140`**.
 
 
 Find the signal strength during the 20th, 60th, 100th, 140th, 180th, and 220th cycles. *What is the sum of these six signal strengths?*
@@ -231,7 +231,7 @@ Like the CPU, the CRT is tied closely to the clock circuit: the CRT draws *a sin
 
 
 
-```
+```ignore
 Cycle   1 -> *#*######################################*#* <- Cycle  40
 Cycle  41 -> *#*######################################*#* <- Cycle  80
 Cycle  81 -> *#*######################################*#* <- Cycle 120
@@ -246,7 +246,7 @@ The first few pixels from the larger example above are drawn as follows:
 
 
 
-```
+```ignore
 Sprite position: ###.....................................
 
 Start cycle   1: begin executing addx 15
@@ -350,7 +350,7 @@ Allowing the program to run to completion causes the CRT to produce the followin
 
 
 
-```
+```ignore
 ##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....

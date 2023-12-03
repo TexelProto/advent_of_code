@@ -20,7 +20,7 @@ for /l %%i in (1, 1, 25) do (
     SET "PADDED_NUM=%%i"
     if %%i lss 10 SET "PADDED_NUM=0%%i"
     SET OUTPUT=".\aoc_%~1\docs\day!PADDED_NUM!.md"
-    python .\download_desc.py %~1 !PADDED_NUM! %~2 > !OUTPUT!
+    python %~dp0\download_desc.py %~1 !PADDED_NUM! %~2 > !OUTPUT!
 )
 
 endlocal

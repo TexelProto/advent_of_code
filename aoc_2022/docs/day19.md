@@ -26,7 +26,7 @@ For example:
 
 
 
-```
+```ignore
 Blueprint 1:
   Each ore robot costs 4 ore.
   Each clay robot costs 2 ore.
@@ -47,11 +47,11 @@ Blueprint 2:
 The elephants are starting to look hungry, so you shouldn't take too long; you need to figure out which blueprint would maximize the number of opened geodes after *24 minutes* by figuring out which robots to build and when to build them.
 
 
-Using blueprint 1 in the example above, the largest number of geodes you could open in 24 minutes is `*9*`. One way to achieve that is:
+Using blueprint 1 in the example above, the largest number of geodes you could open in 24 minutes is **`9`**. One way to achieve that is:
 
 
 
-```
+```ignore
 == Minute 1 ==
 1 ore-collecting robot collects 1 ore; you now have 1 ore.
 
@@ -182,10 +182,10 @@ The new geode-cracking robot is ready; you now have 2 of them.
 
 ```
 
-However, by using blueprint 2 in the example above, you could do even better: the largest number of geodes you could open in 24 minutes is `*12*`.
+However, by using blueprint 2 in the example above, you could do even better: the largest number of geodes you could open in 24 minutes is **`12`**.
 
 
-Determine the *quality level* of each blueprint by *multiplying that blueprint's ID number* with the largest number of geodes that can be opened in 24 minutes using that blueprint. In this example, the first blueprint has ID 1 and can open 9 geodes, so its quality level is `*9*`. The second blueprint has ID 2 and can open 12 geodes, so its quality level is `*24*`. Finally, if you *add up the quality levels* of all of the blueprints in the list, you get `*33*`.
+Determine the *quality level* of each blueprint by *multiplying that blueprint's ID number* with the largest number of geodes that can be opened in 24 minutes using that blueprint. In this example, the first blueprint has ID 1 and can open 9 geodes, so its quality level is **`9`**. The second blueprint has ID 2 and can open 12 geodes, so its quality level is **`24`**. Finally, if you *add up the quality levels* of all of the blueprints in the list, you get **`33`**.
 
 
 Determine the quality level of each blueprint using the largest number of geodes it could produce in 24 minutes. *What do you get if you add up the quality level of all of the blueprints in your list?*
@@ -200,11 +200,11 @@ While you were choosing the best blueprint, the elephants found some food on the
 Unfortunately, one of the elephants *ate most of your blueprint list*! Now, only the first three blueprints in your list are intact.
 
 
-In 32 minutes, the largest number of geodes blueprint 1 (from the example above) can open is `*56*`. One way to achieve that is:
+In 32 minutes, the largest number of geodes blueprint 1 (from the example above) can open is **`56`**. One way to achieve that is:
 
 
 
-```
+```ignore
 == Minute 1 ==
 1 ore-collecting robot collects 1 ore; you now have 1 ore.
 
@@ -402,7 +402,7 @@ The new geode-cracking robot is ready; you now have 9 of them.
 
 ```
 
-However, blueprint 2 from the example above is still better; using it, the largest number of geodes you could open in 32 minutes is `*62*`.
+However, blueprint 2 from the example above is still better; using it, the largest number of geodes you could open in 32 minutes is **`62`**.
 
 
 You *no longer have enough blueprints to worry about quality levels*. Instead, for each of the first three blueprints, determine the largest number of geodes you could open; then, multiply these three values together.

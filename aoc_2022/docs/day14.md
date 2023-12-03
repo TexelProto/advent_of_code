@@ -17,7 +17,7 @@ Your scan traces the path of each solid rock structure and reports the `x,y` coo
 
 
 
-```
+```ignore
 498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9
 
@@ -33,7 +33,7 @@ Drawing rock as `#`, air as `.`, and the source of the sand as `+`, this becomes
 
 
 
-```
+```ignore
 
   4     5  5
   9     0  0
@@ -61,7 +61,7 @@ So, drawing sand that has come to rest as `o`, the first unit of sand simply fal
 
 
 
-```
+```ignore
 ......+...
 ..........
 ..........
@@ -79,7 +79,7 @@ The second unit of sand then falls straight down, lands on the first one, and th
 
 
 
-```
+```ignore
 ......+...
 ..........
 ..........
@@ -97,7 +97,7 @@ After a total of five units of sand have come to rest, they form this pattern:
 
 
 
-```
+```ignore
 ......+...
 ..........
 ..........
@@ -115,7 +115,7 @@ After a total of 22 units of sand:
 
 
 
-```
+```ignore
 ......+...
 ..........
 ......o...
@@ -133,7 +133,7 @@ Finally, only two more units of sand can possibly come to rest:
 
 
 
-```
+```ignore
 ......+...
 ..........
 ......o...
@@ -147,11 +147,11 @@ Finally, only two more units of sand can possibly come to rest:
 
 ```
 
-Once all `*24*` units of sand shown above have come to rest, all further sand flows out the bottom, falling into the endless void. Just for fun, the path any new sand takes before falling forever is shown here with `~`:
+Once all **`24`** units of sand shown above have come to rest, all further sand flows out the bottom, falling into the endless void. Just for fun, the path any new sand takes before falling forever is shown here with `~`:
 
 
 
-```
+```ignore
 .......+...
 .......~...
 ......~o...
@@ -184,7 +184,7 @@ In the example above, the highest `y` coordinate of any point is `9`, and so the
 
 
 
-```
+```ignore
         ...........+........
         ....................
         ....................
@@ -200,11 +200,11 @@ In the example above, the highest `y` coordinate of any point is `9`, and so the
 
 ```
 
-To find somewhere safe to stand, you'll need to simulate falling sand until a unit of sand comes to rest at `500,0`, blocking the source entirely and stopping the flow of sand into the cave. In the example above, the situation finally looks like this after `*93*` units of sand come to rest:
+To find somewhere safe to stand, you'll need to simulate falling sand until a unit of sand comes to rest at `500,0`, blocking the source entirely and stopping the flow of sand into the cave. In the example above, the situation finally looks like this after **`93`** units of sand come to rest:
 
 
 
-```
+```ignore
 ............o............
 ...........ooo...........
 ..........ooooo..........

@@ -17,7 +17,7 @@ For example:
 
 
 
-```
+```ignore
         ...#
         .#..
         #...
@@ -58,7 +58,7 @@ For example, if you are at `A` and facing to the right, the tile in front of you
 
 
 
-```
+```ignore
         ...#
         .#..
         #...
@@ -81,7 +81,7 @@ By drawing the *last facing you had* with an arrow on each tile you visit, the f
 
 
 
-```
+```ignore
         >>v#    
         .#v.    
         #.v.    
@@ -100,7 +100,7 @@ By drawing the *last facing you had* with an arrow on each tile you visit, the f
 To finish providing the password to this strange input device, you need to determine numbers for your final *row*, *column*, and *facing* as your final position appears from the perspective of the original map. Rows start from `1` at the top and count downward; columns start from `1` at the left and count rightward. (In the above example, row 1, column 1 refers to the empty space with no tile on it in the top-left corner.) Facing is `0` for right (`>`), `1` for down (`v`), `2` for left (`<`), and `3` for up (`^`). The *final password* is the sum of 1000 times the row, 4 times the column, and the facing.
 
 
-In the above example, the final row is `6`, the final column is `8`, and the final facing is `0`. So, the final password is 1000 \* 6 + 4 \* 8 + 0: `*6032*`.
+In the above example, the final row is `6`, the final column is `8`, and the final facing is `0`. So, the final password is 1000 \* 6 + 4 \* 8 + 0: **`6032`**.
 
 
 Follow the path given in the monkeys' notes. *What is the final password?*
@@ -122,7 +122,7 @@ In the example above, the six (smaller, 4x4) faces of the cube are:
 
 
 
-```
+```ignore
         1111
         1111
         1111
@@ -142,7 +142,7 @@ You still start in the same position and with the same facing as before, but the
 
 
 
-```
+```ignore
         ...#
         .#..
         #...
@@ -162,7 +162,7 @@ Walls still block your path, even if they are on a different face of the cube. I
 
 
 
-```
+```ignore
         ...#
         .#..
      *-->#*...
@@ -182,7 +182,7 @@ Using the same method of drawing the *last facing you had* with an arrow on each
 
 
 
-```
+```ignore
         >>v#    
         .#v.    
         #.v.    
@@ -198,7 +198,7 @@ Using the same method of drawing the *last facing you had* with an arrow on each
 
 ```
 
-The final password is still calculated from your final position and facing from the perspective of the map. In this example, the final row is `5`, the final column is `7`, and the final facing is `3`, so the final password is 1000 \* 5 + 4 \* 7 + 3 = `*5031*`.
+The final password is still calculated from your final position and facing from the perspective of the map. In this example, the final row is `5`, the final column is `7`, and the final facing is `3`, so the final password is 1000 \* 5 + 4 \* 7 + 3 = **`5031`**.
 
 
 Fold the map into a cube, *then* follow the path given in the monkeys' notes. *What is the final password?*

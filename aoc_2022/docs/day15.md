@@ -14,7 +14,7 @@ It doesn't take long for the sensors to report back their positions and closest 
 
 
 
-```
+```ignore
 Sensor at x=2, y=18: closest beacon is at x=-2, y=15
 Sensor at x=9, y=16: closest beacon is at x=10, y=16
 Sensor at x=13, y=2: closest beacon is at x=15, y=3
@@ -39,7 +39,7 @@ Drawing sensors as `S` and beacons as `B`, the above arrangement of sensors and 
 
 
 
-```
+```ignore
                1    1    2    2
      0    5    0    5    0    5
  0 ....S.......................
@@ -72,7 +72,7 @@ This isn't necessarily a comprehensive map of all beacons in the area, though. B
 
 
 
-```
+```ignore
                1    1    2    2
      0    5    0    5    0    5
 -2 ..........#.................
@@ -113,7 +113,7 @@ So, suppose you have an arrangement of beacons and sensors like in the example a
 
 
 
-```
+```ignore
                  1    1    2    2
        0    5    0    5    0    5
  9 ...#########################...
@@ -122,7 +122,7 @@ So, suppose you have an arrangement of beacons and sensors like in the example a
 
 ```
 
-In this example, in the row where `y=10`, there are `*26*` positions where a beacon cannot be present.
+In this example, in the row where `y=10`, there are **`26`** positions where a beacon cannot be present.
 
 
 Consult the report from the sensors you just deployed. *In the row where `y=2000000`, how many positions cannot contain a beacon?*
@@ -137,7 +137,7 @@ Your handheld device indicates that the distress signal is coming from a beacon 
 To isolate the distress beacon's signal, you need to determine its *tuning frequency*, which can be found by multiplying its `x` coordinate by `4000000` and then adding its `y` coordinate.
 
 
-In the example above, the search space is smaller: instead, the `x` and `y` coordinates can each be at most `20`. With this reduced search area, there is only a single position that could have a beacon: `x=14, y=11`. The tuning frequency for this distress beacon is `*56000011*`.
+In the example above, the search space is smaller: instead, the `x` and `y` coordinates can each be at most `20`. With this reduced search area, there is only a single position that could have a beacon: `x=14, y=11`. The tuning frequency for this distress beacon is **`56000011`**.
 
 
 Find the only possible position for the distress beacon. *What is its tuning frequency?*

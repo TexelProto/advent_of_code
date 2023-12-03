@@ -20,7 +20,7 @@ Due to the aforementioned Planck lengths, the rope must be quite short; in fact,
 
 
 
-```
+```ignore
 ....
 .TH.
 ....
@@ -40,7 +40,7 @@ If the head is ever two steps directly up, down, left, or right from the tail, t
 
 
 
-```
+```ignore
 .....    .....    .....
 .TH.. -> .T.H. -> ..TH.
 .....    .....    .....
@@ -57,7 +57,7 @@ Otherwise, if the head and tail aren't touching and aren't in the same row or co
 
 
 
-```
+```ignore
 .....    .....    .....
 .....    ..H..    ..H..
 ..H.. -> ..... -> ..T..
@@ -79,7 +79,7 @@ For example:
 
 
 
-```
+```ignore
 R 4
 U 4
 L 3
@@ -95,7 +95,7 @@ This series of motions moves the head *right* four steps, then *up* four steps, 
 
 
 
-```
+```ignore
 == Initial State ==
 
 ......
@@ -270,7 +270,7 @@ After simulating the rope, you can count up all of the positions the *tail visit
 
 
 
-```
+```ignore
 ..##..
 ...##.
 .####.
@@ -279,7 +279,7 @@ s###..
 
 ```
 
-So, there are `*13*` positions the tail visited at least once.
+So, there are **`13`** positions the tail visited at least once.
 
 
 Simulate your complete hypothetical series of motions. *How many positions does the tail of the rope visit at least once?*
@@ -301,7 +301,7 @@ Using the same series of motions as the above example, but with the knots marked
 
 
 
-```
+```ignore
 == Initial State ==
 
 ......
@@ -472,14 +472,14 @@ H123..  (2 covers 4)
 
 ```
 
-Now, you need to keep track of the positions the new tail, `9`, visits. In this example, the tail never moves, and so it only visits `*1*` position. However, *be careful*: more types of motion are possible than before, so you might want to visually compare your simulated rope to the one above.
+Now, you need to keep track of the positions the new tail, `9`, visits. In this example, the tail never moves, and so it only visits **`1`** position. However, *be careful*: more types of motion are possible than before, so you might want to visually compare your simulated rope to the one above.
 
 
 Here's a larger example:
 
 
 
-```
+```ignore
 R 5
 U 8
 L 8
@@ -495,7 +495,7 @@ These motions occur as follows (individual steps are not shown):
 
 
 
-```
+```ignore
 == Initial State ==
 
 ..........................
@@ -715,11 +715,11 @@ H.........................
 
 ```
 
-Now, the tail (`9`) visits `*36*` positions (including `s`) at least once:
+Now, the tail (`9`) visits **`36`** positions (including `s`) at least once:
 
 
 
-```
+```ignore
 ..........................
 ..........................
 ..........................

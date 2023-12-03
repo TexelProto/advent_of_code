@@ -1,4 +1,5 @@
 import sys
+import re
 import http.client
 from markdownify import markdownify as md
 
@@ -58,4 +59,10 @@ while True:
     content += html[start_index + len(openTag):end_index]
     pos = end_index + len(closeTag)
 
-print(md(content))
+# ensure code blocks arent interpreted as rust doc-tests
+md_text = md(content, code_language="ignore")
+
+# The website uses <code><em> for bold code blocks the resulting markdown `*...*` wouldnt be parsed correctly so flip it inside out
+md_text = re.sub(r"`\*(.*?)\*`", "**`\\g<1>`**", md_text, 0, re.MULTILINE)
+
+print(md_text)

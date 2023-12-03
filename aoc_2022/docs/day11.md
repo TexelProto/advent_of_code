@@ -11,7 +11,7 @@ You take some notes (your puzzle input) on the items each monkey currently has, 
 
 
 
-```
+```ignore
 Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
@@ -65,7 +65,7 @@ In the above example, the first round proceeds as follows:
 
 
 
-```
+```ignore
 Monkey 0:
   Monkey inspects an item with a worry level of 79.
     Worry level is multiplied by 19 to 1501.
@@ -147,7 +147,7 @@ After round 1, the monkeys are holding items with these worry levels:
 
 
 
-```
+```ignore
 Monkey 0: 20, 23, 27, 26
 Monkey 1: 2080, 25, 167, 207, 401, 1046
 Monkey 2: 
@@ -162,7 +162,7 @@ This process continues for a few more rounds:
 
 
 
-```
+```ignore
 After round 2, the monkeys are holding items with these worry levels:
 Monkey 0: 695, 10, 71, 135, 350
 Monkey 1: 43, 49, 58, 55, 362
@@ -239,7 +239,7 @@ Chasing all of the monkeys at once is impossible; you're going to have to focus 
 
 
 
-```
+```ignore
 *Monkey 0 inspected items 101 times.*
 Monkey 1 inspected items 95 times.
 Monkey 2 inspected items 7 times.
@@ -247,7 +247,7 @@ Monkey 2 inspected items 7 times.
 
 ```
 
-In this example, the two most active monkeys inspected items 101 and 105 times. The level of *monkey business* in this situation can be found by multiplying these together: `*10605*`.
+In this example, the two most active monkeys inspected items 101 and 105 times. The level of *monkey business* in this situation can be found by multiplying these together: **`10605`**.
 
 
 Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. *What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?*
@@ -269,7 +269,7 @@ With these new rules, you can still figure out the monkey business after 10000 r
 
 
 
-```
+```ignore
 == After round 1 ==
 Monkey 0 inspected items 2 times.
 Monkey 1 inspected items 4 times.
@@ -344,7 +344,7 @@ Monkey 2 inspected items 1938 times.
 
 ```
 
-After 10000 rounds, the two most active monkeys inspected items 52166 and 52013 times. Multiplying these together, the level of *monkey business* in this situation is now `*2713310158*`.
+After 10000 rounds, the two most active monkeys inspected items 52166 and 52013 times. Multiplying these together, the level of *monkey business* in this situation is now **`2713310158`**.
 
 
 Worry levels are no longer divided by three after each item is inspected; you'll need to find another way to keep your worry levels manageable. Starting again from the initial state in your puzzle input, *what is the level of monkey business after 10000 rounds?*

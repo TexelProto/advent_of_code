@@ -20,7 +20,7 @@ You make a list of all of the fuel requirements (your puzzle input), but you don
 
 
 
-```
+```ignore
 1=-0-2
 12111
 2=0=
@@ -55,7 +55,7 @@ You mention that it's quite cold up here and ask if they can skip ahead.
 You ask why some of the digits look like `-` or `=` instead of "digits".
 
 
-"You know, I never did ask the engineers why they did that. Instead of using digits four through zero, the digits are `*2*`, `*1*`, `*0*`, *minus* (written `-`), and *double-minus* (written `=`). Minus is worth -1, and double-minus is worth -2."
+"You know, I never did ask the engineers why they did that. Instead of using digits four through zero, the digits are **`2`**, **`1`**, **`0`**, *minus* (written `-`), and *double-minus* (written `=`). Minus is worth -1, and double-minus is worth -2."
 
 
 "So, because ten (in normal numbers) is two fives and no ones, in SNAFU it is written `20`. Since eight (in normal numbers) is two fives minus two ones, it is written `2=`."
@@ -80,7 +80,7 @@ The SNAFU brochure contains a few more examples of decimal ("normal") numbers an
 
 
 
-```
+```ignore
   Decimal          SNAFU
         1              1
         2              2
@@ -104,7 +104,7 @@ Based on this process, the SNAFU numbers in the example above can be converted t
 
 
 
-```
+```ignore
  SNAFU  Decimal
 1=-0-2     1747
  12111      906
@@ -128,7 +128,7 @@ In decimal, the sum of these numbers is `4890`.
 As you go to input this number on Bob's console, you discover that some buttons you expected are missing. Instead, you are met with buttons labeled `=`, `-`, `0`, `1`, and `2`. Bob needs the input value expressed as a SNAFU number, not in decimal.
 
 
-Reversing the process, you can determine that for the decimal number `4890`, the SNAFU number you need to supply to Bob's console is `*2=-1=0*`.
+Reversing the process, you can determine that for the decimal number `4890`, the SNAFU number you need to supply to Bob's console is **`2=-1=0`**.
 
 
 The Elves are starting to get cold. *What SNAFU number do you supply to Bob's console?*

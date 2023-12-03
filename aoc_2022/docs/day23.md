@@ -35,7 +35,7 @@ For example:
 
 
 
-```
+```ignore
 ....#..
 ..###.#
 #...#.#
@@ -71,7 +71,7 @@ As a smaller example, consider just these five Elves:
 
 
 
-```
+```ignore
 .....
 ..##.
 ..#..
@@ -85,7 +85,7 @@ The northernmost two Elves and southernmost two Elves all propose moving north, 
 
 
 
-```
+```ignore
 ..##.
 .....
 ..#..
@@ -99,7 +99,7 @@ Next, the northernmost two Elves and the southernmost Elf all propose moving sou
 
 
 
-```
+```ignore
 .....
 ..##.
 .#...
@@ -113,7 +113,7 @@ Finally, the southernmost two Elves choose not to move at all. Of the remaining 
 
 
 
-```
+```ignore
 ..#..
 ....#
 #....
@@ -130,7 +130,7 @@ The larger example above proceeds as follows:
 
 
 
-```
+```ignore
 == Initial State ==
 ..............
 ..............
@@ -221,7 +221,7 @@ After a few more rounds...
 
 
 
-```
+```ignore
 == End of Round 10 ==
 .......#......
 ...........#..
@@ -242,7 +242,7 @@ To make sure they're on the right track, the Elves like to check after round 10 
 
 
 
-```
+```ignore
 ......#.....
 ..........#.
 .#.#..#.....
@@ -257,7 +257,7 @@ To make sure they're on the right track, the Elves like to check after round 10 
 
 ```
 
-In this region, the number of empty ground tiles is `*110*`.
+In this region, the number of empty ground tiles is **`110`**.
 
 
 Simulate the Elves' process and find the smallest rectangle that contains the Elves after 10 rounds. *How many empty ground tiles does that rectangle contain?*
@@ -269,11 +269,11 @@ Simulate the Elves' process and find the smallest rectangle that contains the El
 It seems you're on the right track. Finish simulating the process and figure out where the Elves need to go. How many rounds did you save them?
 
 
-In the example above, the *first round where no Elf moved* was round `*20*`:
+In the example above, the *first round where no Elf moved* was round **`20`**:
 
 
 
-```
+```ignore
 .......#......
 ....#......#..
 ..#.....#.....

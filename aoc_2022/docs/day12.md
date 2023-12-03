@@ -17,7 +17,7 @@ For example:
 
 
 
-```
+```ignore
 *S*abqponm
 abcryxxl
 accsz*E*xk
@@ -30,7 +30,7 @@ Here, you start in the top-left corner; your goal is near the middle. You could 
 
 
 
-```
+```ignore
 v..v<<<<
 >v.vv<<^
 .>vv>E^^
@@ -42,7 +42,7 @@ v..v<<<<
 In the above diagram, the symbols indicate whether the path exits each square moving up (`^`), down (`v`), left (`<`), or right (`>`). The location that should get the best signal is still `E`, and `.` marks unvisited squares.
 
 
-This path reaches the goal in `*31*` steps, the fewest possible.
+This path reaches the goal in **`31`** steps, the fewest possible.
 
 
 *What is the fewest steps required to move from your current position to the location that should get the best signal?*
@@ -61,7 +61,7 @@ Again consider the example from above:
 
 
 
-```
+```ignore
 *S*abqponm
 abcryxxl
 accsz*E*xk
@@ -74,7 +74,7 @@ Now, there are six choices for starting position (five marked `a`, plus the squa
 
 
 
-```
+```ignore
 ...v<<<<
 ...vv<<^
 ...v>E^^
@@ -83,7 +83,7 @@ Now, there are six choices for starting position (five marked `a`, plus the squa
 
 ```
 
-This path reaches the goal in only `*29*` steps, the fewest possible.
+This path reaches the goal in only **`29`** steps, the fewest possible.
 
 
 *What is the fewest steps required to move starting from any square with elevation `a` to the location that should get the best signal?*

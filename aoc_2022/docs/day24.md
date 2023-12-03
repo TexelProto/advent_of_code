@@ -17,7 +17,7 @@ Fortunately, it's easy to see all of this from the entrance to the valley, so yo
 
 
 
-```
+```ignore
 #.#####
 #.....#
 #>....#
@@ -35,7 +35,7 @@ The above map includes two blizzards, one moving right (`>`) and one moving down
 
 
 
-```
+```ignore
 #.#####
 #.....#
 #.>...#
@@ -50,7 +50,7 @@ Due to conservation of blizzard energy, as a blizzard reaches the wall of the va
 
 
 
-```
+```ignore
 #.#####
 #...v.#
 #..>..#
@@ -65,7 +65,7 @@ Because blizzards are made of tiny snowflakes, they pass right through each othe
 
 
 
-```
+```ignore
 #.#####
 #.....#
 #...2.#
@@ -80,7 +80,7 @@ After another minute, the situation resolves itself, giving each blizzard back i
 
 
 
-```
+```ignore
 #.#####
 #.....#
 #....>#
@@ -95,7 +95,7 @@ Finally, after yet another minute, the rightward-facing blizzard on the right is
 
 
 
-```
+```ignore
 #.#####
 #.....#
 #>....#
@@ -113,7 +113,7 @@ Here is a more complex example:
 
 
 
-```
+```ignore
 #.######
 #>>.<^<#
 #.<..<<#
@@ -126,11 +126,11 @@ Here is a more complex example:
 Your expedition begins in the only non-wall position in the top row and needs to reach the only non-wall position in the bottom row. On each minute, you can *move* up, down, left, or right, or you can *wait* in place. You and the blizzards act *simultaneously*, and you cannot share a position with a blizzard.
 
 
-In the above example, the fastest way to reach your goal requires `*18*` steps. Drawing the position of the expedition as `E`, one way to achieve this is:
+In the above example, the fastest way to reach your goal requires **`18`** steps. Drawing the position of the expedition as `E`, one way to achieve this is:
 
 
 
-```
+```ignore
 Initial state:
 #*E*######
 #>>.<^<#
@@ -300,7 +300,7 @@ He *forgot his snacks* at the entrance to the valley!
 Since you're so good at dodging blizzards, the Elves humbly request that you go back for his snacks. From the same initial conditions, how quickly can you make it from the start to the goal, then back to the start, then back to the goal?
 
 
-In the above example, the first trip to the goal takes `18` minutes, the trip back to the start takes `23` minutes, and the trip back to the goal again takes `13` minutes, for a total time of `*54*` minutes.
+In the above example, the first trip to the goal takes `18` minutes, the trip back to the start takes `23` minutes, and the trip back to the goal again takes `13` minutes, for a total time of **`54`** minutes.
 
 
 *What is the fewest number of minutes required to reach the goal, go back to the start, then reach the goal again?*
