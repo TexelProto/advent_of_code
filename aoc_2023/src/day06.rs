@@ -65,16 +65,16 @@ fn find_limits(time: u64, min_dist: u64) -> (u64, u64) {
 }
 
 pub fn task2(mut input: Linewise<String>) -> Result<u64, Error> {
-    let mut time = input.next()
+    let time = input.next()
         .ok_or(Error::MissingLine("Time"))?
-        .unwrap();
-    let time = time.replace(char::is_whitespace, "");
+        .unwrap()
+        .replace(char::is_whitespace, "");
     let time = u64::from_str(&time[5..])?;
 
     let distance = input.next()
         .ok_or(Error::MissingLine("Distance"))?
-        .unwrap();
-    let distance = distance.replace(char::is_whitespace, "");
+        .unwrap()
+        .replace(char::is_whitespace, "");
     let distance = u64::from_str(&distance[9..])?;
 
     let t = find_limits(time, distance);
