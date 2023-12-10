@@ -15,12 +15,6 @@ pub enum Error {
 struct Bits([u64; 2]);
 
 impl Bits {
-    pub fn get(&self, i: usize) -> bool {
-        let bucket = &self.0[i / 64];
-        let bit = i % 64;
-        let mask = 1 << bit;
-        bucket & mask != 0
-    }
     pub fn set(&mut self, i: usize) {
         let bucket = &mut self.0[i / 64];
         let bit = i % 64;

@@ -3,12 +3,26 @@ use std::{str::FromStr, marker::PhantomData, io::{BufRead, Cursor}, convert::Inf
 use super::Input;
 
 pub type CommaSeparated<'a, T> = CharSeparated<'a, T, ','>;
+pub type SpaceSeparated<'a, T> = CharSeparated<'a, T, ' '>;
 
 pub struct CharSeparated<'a, T: 'a + FromStr, const C: char> {
     input: Box<dyn 'a + BufRead>,
     buffer: String, 
     cursor: usize,
     _t: PhantomData<T>,
+}
+
+impl<'a, T: FromStr, const C: char> FromStr for CharSeparated<'a, T, C> {
+    type Err = Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            input: Box::new([0u8;0].as_slice()),
+            buffer: s.to_string(),
+            cursor: 0,
+            _t: PhantomData,
+        })
+    }
 }
 
 impl<'a, T: 'a + FromStr, const C: char> Input<'a> for CharSeparated<'a, T, C> {
@@ -19,8 +33,8 @@ impl<'a, T: 'a + FromStr, const C: char> Input<'a> for CharSeparated<'a, T, C> {
             input: Box::new(read),
             buffer: String::new(),
             cursor: 0,
-             _t: PhantomData
-        })        
+            _t: PhantomData
+        })
     }
 }
 
