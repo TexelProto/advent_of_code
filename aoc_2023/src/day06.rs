@@ -51,7 +51,7 @@ pub fn task1(mut input: Linewise<String>) -> Result<u64, Error> {
 
 fn find_limits(time: u64, min_dist: u64) -> (u64, u64) {
     let time = time as f64;
-    let min_dist = min_dist as f64;
+    let min_dist = min_dist as f64 + 0.001;
 
     let a = (-time + f64::sqrt(time.powi(2) - 4.0 * min_dist)) / -2.0;
     let b = (-time - f64::sqrt(time.powi(2) - 4.0 * min_dist)) / -2.0;
@@ -105,6 +105,6 @@ Distance:  9  40  200";
         let buf = std::io::BufReader::new(INPUT);
         let result = task2(Input::parse(buf).unwrap());
         let val = result.unwrap();
-        assert_eq!(val, 32583852);
+        assert_eq!(val, 71503);
     }
 }
