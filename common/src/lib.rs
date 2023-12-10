@@ -6,6 +6,7 @@ pub mod iter_ext;
 pub mod debug;
 pub mod macros;
 pub mod geometry_2d;
+pub mod num_enum;
 
 #[derive(Debug)]
 pub struct Year {
