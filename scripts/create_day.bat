@@ -21,7 +21,7 @@ if not exist "%~1" (
 echo D | xcopy "%~dp0\_daytemplate.rs" ".\%1\src\%2.rs" /I /Y
 echo "Created ./%1/src/%2.rs"
 
-copy NUL ".\inputs\%1\%2.txt"
-echo "Created ./inputs/%1/%2.txt"
+copy NUL ".\%1\inputs\%2.txt"
+echo "Created ./%1/inputs/%2.txt"
 
 endlocal
