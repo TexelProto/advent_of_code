@@ -19,5 +19,5 @@ fi
 cp "_daytemplate.rs" "$1/src/$2.rs"
 echo "Created ./$1/src/$2.rs"
 
-touch "inputs/$1/$2.txt"
-echo "Created ./inputs/$1/$2.txt"
+touch "$1/inputs/$2.txt"
+echo "Created ./$1/inputs/$2.txt"
