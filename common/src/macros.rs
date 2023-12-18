@@ -62,6 +62,18 @@ macro_rules! some_or_continue {
     }
 }
 
+#[macro_export]
+macro_rules! some_or_break {
+    ($e:expr $(=> $life:tt)?) => {
+        {
+            let __res: Option<_> = $e;
+            match __res {
+                Some(val) => val,
+                None => break $($life)?,
+            }
+        }
+    }
+}
 
 #[macro_export]
 macro_rules! ok_or_continue {

@@ -1,4 +1,5 @@
 use std::{num::ParseIntError, str::FromStr};
+use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Point {
@@ -7,14 +8,40 @@ pub struct Point {
 }
 
 impl Point {
-    pub fn offset(p: Self, dir: Direction) -> Option<Self> {
-        let x = p.x.checked_add_signed(dir.x)?;
-        let y = p.y.checked_add_signed(dir.y)?;
+    pub fn offset(self, dir: Direction) -> Option<Self> {
+        let x = self.x.checked_add_signed(dir.x)?;
+        let y = self.y.checked_add_signed(dir.y)?;
         Some(Self { x, y })
     }
 
     pub fn distance(p1: Self, p2: Self) -> u32 {
         p1.x.abs_diff(p2.x) + p1.y.abs_diff(p2.y)
+    }
+}
+
+impl Add<Direction> for Point {
+    type Output = Self;
+    fn add(self, rhs: Direction) -> Self::Output {
+        self.offset(rhs).expect("Offsetting point overflowed")
+    }
+}
+
+impl AddAssign<Direction> for Point {
+    fn add_assign(&mut self, rhs: Direction) {
+        *self = *self + rhs;
+    }
+}
+
+impl Sub<Direction> for Point {
+    type Output = Self;
+    fn sub(self, rhs: Direction) -> Self::Output {
+        self.offset(-rhs).expect("Offsetting point overflowed")
+    }
+}
+
+impl SubAssign<Direction> for Point {
+    fn sub_assign(&mut self, rhs: Direction) {
+        *self = *self + -rhs;
     }
 }
 
@@ -41,6 +68,16 @@ impl FromStr for Point {
 pub struct Direction {
     pub x: i32,
     pub y: i32,
+}
+
+impl Neg for Direction {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Self {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
 }
 
 impl Direction {
