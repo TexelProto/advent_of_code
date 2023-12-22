@@ -63,7 +63,6 @@ macro_rules! decl_year {
             $(#[doc($path:literal)])?
             $day:ident {
                 $(
-                    $(#[$attr:meta])*
                     $task:ident;
                 )*
             }
