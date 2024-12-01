@@ -1,5 +1,3 @@
-#![deny(private_in_public)]
-
 pub use aoc_2021;
 pub use aoc_2022;
 pub use aoc_2023;

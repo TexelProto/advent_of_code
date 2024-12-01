@@ -56,7 +56,7 @@ pub fn task2(mut input: Linewise<Pair>) -> Result<u32, Error> {
             Entry::Occupied(mut o) => {
                 *o.get_mut() += 1;
             },
-            Entry::Vacant(mut v) => {
+            Entry::Vacant(v) => {
                 v.insert(1);
             },
         }
