@@ -7,6 +7,7 @@ pub mod debug;
 pub mod macros;
 pub mod geometry_2d;
 pub mod num_enum;
+pub mod bit_set;
 
 #[derive(Debug)]
 pub struct Year {
