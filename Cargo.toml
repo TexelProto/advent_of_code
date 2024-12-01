@@ -21,3 +21,4 @@ thiserror = "1.0.47"
 clap_derive = "4.4.2"
 aoc_2021 = { version = "0.1.0", path = "aoc_2021" }
 aoc_2023 = { version = "0.1.0", path = "aoc_2023" }
+aoc_2024 = { version = "0.1.0", path = "aoc_2024" }
