@@ -1,9 +1,9 @@
-use std::str::FromStr;
-
+use ahash::{HashMap, HashMapExt};
 use common::{
     input::{LineSeparated, Linewise},
-    iter_ext::TryIterator
+    iter_ext::TryIterator,
 };
+use std::str::FromStr;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -75,59 +75,48 @@ pub fn task2<'a>(input: LineSeparated<'a, String, Linewise<'a, Rule>>) -> Result
 
     // divide the input into pairs (keep in mind the pairs overlap)
     // ie NNCB => [NN, NC, CB]
-    let mut pairs = line
-        .windows(2)
-        .map(|w| {
-            let mut array = [0; 2];
-            array.copy_from_slice(w);
-            (array, 1_u64)
-        })
-        .collect::<ahash::HashMap<_, _>>();
-
-    // count occurences of each char
-    let mut char_count = vec![];
-    for char in line.clone() {
-        match char_count.iter_mut().find(|(c, _)| *c == char) {
-            Some(entry) => entry.1 += 1,
-            None => char_count.push((char, 1)),
-        }
+    let mut source = HashMap::<[u8; 2], u64>::new();
+    for pair in line.windows(2) {
+        let mut array = [0; 2];
+        array.copy_from_slice(pair);
+        *source.entry(array).or_default() += 1;
     }
 
+    // count occurrences of each char
+    let mut char_count = HashMap::new();
+    for char in line.clone() {
+        *char_count.entry(char).or_default() += 1;
+    }
+
+    let mut dest = HashMap::default();
     for _ in 0..40 {
-        let mut next = ahash::HashMap::default();
-        for (pair, count) in pairs.iter() {
-            match rules.iter().find(|r| r.pair == *pair) {
+        for (pair, count) in source.drain() {
+            match rules.iter().find(|r| r.pair == pair) {
                 Some(rule) => {
                     // break down the pair into two pairs
-                    // ie AB -> C makes (A, C) and (C, B)
+                    // ie AB -> C makes AC and CB
                     let a = [pair[0], rule.insert];
-                    *next.entry(a).or_default() += count;
+                    *dest.entry(a).or_default() += count;
 
                     let b = [rule.insert, pair[1]];
-                    *next.entry(b).or_default() += count;
+                    *dest.entry(b).or_default() += count;
 
                     // update the char count
-                    match char_count.iter_mut().find(|(c, _)| *c == rule.insert) {
-                        Some(t) => t.1 += count,
-                        None => char_count.push((rule.insert, *count)),
-                    };
+                    *char_count.entry(rule.insert).or_default() += count;
                 }
                 None => {
-                    *next.entry(*pair).or_default() += count;
+                    // if no rules match just copy over the pair
+                    *dest.entry(pair).or_default() += count;
                 }
             };
         }
-        pairs = next;
+        std::mem::swap(&mut source, &mut dest);
     }
 
-    // sort the char count
-    char_count.sort_by_cached_key(|(_, count)| *count);
+    let most: u64 = *char_count.values().max().unwrap();
+    let least: u64 = *char_count.values().min().unwrap();
 
-    let most = char_count[0].1;
-    let least = char_count[char_count.len() - 1].1;
-
-    let result = least - most;
-    // assert!(dbg!(result) > 3277772741534u64);
+    let result = most - least;
 
     Ok(result)
 }
