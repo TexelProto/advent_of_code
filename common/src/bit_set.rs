@@ -90,7 +90,7 @@ impl BitSet {
     }
 
     pub fn get(&self, i: usize) -> bool {
-        assert!(i < self.len, "Index exceeded set length");
+        assert!(i < self.len, "Index {i} exceeded set length {}", self.len);
 
         let bucket = i / 8;
         let bit = i % 8;
@@ -108,6 +108,12 @@ impl BitSet {
 
     pub fn count_zeros(&self) -> u32 {
         self.bits.iter().map(|i| i.count_zeros()).sum()
+    }
+
+    pub fn clear(&mut self) {
+        for i in self.bits.iter_mut() {
+            *i = 0;
+        }
     }
 }
 

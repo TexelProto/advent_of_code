@@ -5,6 +5,30 @@ pub trait FromChar: Sized {
     fn from_char(c: char) -> Result<Self, Self::Err>;
 }
 
+#[derive(thiserror::Error, Debug)]
+#[error("Character was not a digit")]
+pub struct NonDigitChar;
+
+macro_rules! impl_from_char_int {
+    ($($ty:ty),*) => {
+        $(
+        impl FromChar for $ty {
+            type Err = NonDigitChar;
+            fn from_char(c: char) -> Result<Self, Self::Err> {
+                if c.is_ascii_digit() == false {
+                    return Err(NonDigitChar);
+                }
+
+                let i = c as u8 - b'0';
+                Ok(i as $ty)
+            }
+        }
+        )*
+    };
+}
+
+impl_from_char_int!(u8, u16, u32, u64, usize, i8, i16, i32, i64, isize);
+
 impl FromChar for char {
     type Err = Infallible;
 

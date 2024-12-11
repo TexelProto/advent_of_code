@@ -1,5 +1,5 @@
-use std::{num::ParseIntError, str::FromStr};
 use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
+use std::{num::ParseIntError, str::FromStr};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Point {
@@ -8,6 +8,10 @@ pub struct Point {
 }
 
 impl Point {
+    pub fn new(x: u32, y: u32) -> Self {
+        Self { x, y }
+    }
+
     pub fn offset(self, dir: Direction) -> Option<Self> {
         let x = self.x.checked_add_signed(dir.x)?;
         let y = self.y.checked_add_signed(dir.y)?;
