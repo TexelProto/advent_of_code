@@ -11,3 +11,6 @@ nom = "7.1.3"
 pattern_parse = { version = "0.1.0", path = "../pattern_parse" }
 thiserror = "1.0.37"
 nalgebra = "0.33"
+
+[profile.dev.package.nalgebra]
+opt-level = 1
