@@ -11,4 +11,5 @@ common::decl_year! {
     day10 {task1;task2;}
     day11 {task1;task2;}
     day14 {task1;task2;}
+    day17 {task1;task2;}
 }
