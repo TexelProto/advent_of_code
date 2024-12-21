@@ -101,8 +101,8 @@ pub trait World<'a> {
 }
 
 pub trait Agent<'a, W: World<'a>> {
-    type Score: Score;
-    fn get_cost(&self, world: &W, start: &W::Index, destination: &W::Index) -> Option<Self::Score>;
+    type Cost: Score;
+    fn get_cost(&self, world: &W, start: &W::Index, destination: &W::Index) -> Option<Self::Cost>;
 }
 
 pub trait Algorithm<'a, W: World<'a>, A: Agent<'a, W>> {
@@ -113,6 +113,16 @@ pub trait Algorithm<'a, W: World<'a>, A: Agent<'a, W>> {
         agent: &A,
         start: W::Index,
         target: W::Index,
+    ) -> Result<Path<'a, W>, Self::Error> {
+        self.try_get_path(world, agent, start, target, None)
+    }
+    fn try_get_path(
+        &self,
+        world: &'a W,
+        agent: &A,
+        start: W::Index,
+        target: W::Index,
+        max_steps: Option<u32>,
     ) -> Result<Path<'a, W>, Self::Error>;
 }
 

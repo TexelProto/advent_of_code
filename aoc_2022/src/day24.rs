@@ -170,14 +170,14 @@ fn step_wind(grid: &Grid<Tile>, x: usize, y: usize, wind: Tile) -> (Tile, usize,
 struct Agent;
 
 impl pf::Agent<'_, Map> for Agent {
-    type Score = u32;
+    type Cost = u32;
 
     fn get_cost(
         &self,
         world: &Map,
         _start: &<Map as pf::World>::Index,
         destination: &<Map as pf::World>::Index,
-    ) -> Option<Self::Score> {
+    ) -> Option<Self::Cost> {
         let x = destination.x;
         let y = destination.y;
         let time = destination.time.unwrap();

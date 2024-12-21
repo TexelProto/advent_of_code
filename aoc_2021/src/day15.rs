@@ -36,9 +36,9 @@ impl<'a> pf::World<'a> for Map {
 struct Agent;
 
 impl<'a> pf::Agent<'a, Map> for Agent {
-    type Score = u32;
+    type Cost = u32;
 
-    fn get_cost(&self, world: &Map, _start: &Point, destination: &Point) -> Option<Self::Score> {
+    fn get_cost(&self, world: &Map, _start: &Point, destination: &Point) -> Option<Self::Cost> {
         Some(world.value_of(*destination))
     }
 }

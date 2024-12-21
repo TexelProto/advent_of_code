@@ -125,9 +125,9 @@ impl<'a> pf::World<'a> for Map {
 struct Agent;
 
 impl pf::Agent<'_, Map> for Agent {
-    type Score = u64;
+    type Cost = u64;
 
-    fn get_cost(&self, _world: &Map, _start: &u16, _destination: &u16) -> Option<Self::Score> {
+    fn get_cost(&self, _world: &Map, _start: &u16, _destination: &u16) -> Option<Self::Cost> {
         Some(1)
     }
 }

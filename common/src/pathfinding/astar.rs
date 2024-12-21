@@ -1,9 +1,4 @@
-use std::{
-    cmp::Reverse,
-    collections::{BinaryHeap, HashSet},
-    fmt::Debug,
-    marker::PhantomData,
-};
+use std::{cmp::Reverse, collections::HashSet, fmt::Debug, marker::PhantomData};
 
 use super::*;
 use thiserror::Error;
@@ -67,7 +62,7 @@ pub enum Error {
     NoPossiblePath,
 }
 
-pub struct Algorithm<'a, W: World<'a>, A: Agent<'a, W>, H: Fn(&W, &W::Index, &W::Index) -> A::Score>
+pub struct Algorithm<'a, W: World<'a>, A: Agent<'a, W>, H: Fn(&W, &W::Index, &W::Index) -> A::Cost>
 {
     hueristic: H,
     _life: PhantomData<&'a ()>,
@@ -75,7 +70,7 @@ pub struct Algorithm<'a, W: World<'a>, A: Agent<'a, W>, H: Fn(&W, &W::Index, &W:
     _a: PhantomData<A>,
 }
 
-impl<'a, W: World<'a>, A: Agent<'a, W>, H: Fn(&W, &W::Index, &W::Index) -> A::Score>
+impl<'a, W: World<'a>, A: Agent<'a, W>, H: Fn(&W, &W::Index, &W::Index) -> A::Cost>
     Algorithm<'a, W, A, H>
 {
     pub fn new(hueristic: H) -> Self {
@@ -92,28 +87,31 @@ impl<'a, W, A, H> super::Algorithm<'a, W, A> for Algorithm<'a, W, A, H>
 where
     W: World<'a>,
     A: Agent<'a, W>,
-    H: Fn(&W, &W::Index, &W::Index) -> A::Score,
+    H: Fn(&W, &W::Index, &W::Index) -> A::Cost,
 {
     type Error = Error;
 
-    fn get_path(
+    fn try_get_path(
         &self,
         world: &'a W,
         agent: &A,
         start: W::Index,
         target: W::Index,
+        max_steps: Option<u32>,
     ) -> Result<Path<'a, W>, Self::Error> {
-        let mut paths = BinaryHeap::new();
+        let mut paths = Vec::new();
         let mut visited = HashSet::new();
         visited.insert(start.clone());
 
         paths.push(Reverse(PartialPath {
             world,
             positions: vec![start.clone()],
-            start_distance: A::Score::default(),
+            start_distance: A::Cost::default(),
             hueristic_distance: (self.hueristic)(world, &start, &target),
         }));
-        loop {
+        let mut step = 0;
+        while Some(step) != max_steps {
+            step += 1;
             let shortest = paths.pop().ok_or(Error::NoPossiblePath)?;
             let shortest = shortest.0;
 
@@ -133,7 +131,7 @@ where
                 path.append(neighbor.clone(), dist);
 
                 if neighbor == target {
-                    let path = super::Path {
+                    let path = Path {
                         world,
                         positions: path.positions,
                     };
@@ -142,10 +140,15 @@ where
 
                 let hue = (self.hueristic)(world, &neighbor, &target);
                 path.hueristic_distance = hue;
-                paths.push(Reverse(path));
+
+                let insert = Reverse(path);
+                let index = paths.binary_search(&insert).unwrap_or_else(|i| i);
+                paths.insert(index, insert);
 
                 visited.insert(neighbor);
             }
         }
+
+        Err(Error::NoPossiblePath)
     }
 }

@@ -41,9 +41,9 @@ impl pf::World<'_> for World {
 struct Agent;
 
 impl pf::Agent<'_, World> for Agent {
-    type Score = u64;
+    type Cost = u64;
 
-    fn get_cost(&self, world: &World, _start: &Point, destination: &Point) -> Option<Self::Score> {
+    fn get_cost(&self, world: &World, _start: &Point, destination: &Point) -> Option<Self::Cost> {
         if world.contains(destination) {
             None // dont walk into walls
         } else {

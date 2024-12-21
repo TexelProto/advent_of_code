@@ -47,13 +47,13 @@ impl pf::World<'_> for Map {
 struct Agent;
 
 impl pf::Agent<'_, Map> for Agent {
-    type Score = u64;
+    type Cost = u64;
     fn get_cost(
         &self,
         world: &Map,
         start: &<Map as pf::World>::Index,
         destination: &<Map as pf::World>::Index,
-    ) -> Option<Self::Score> {
+    ) -> Option<Self::Cost> {
         let mut start_char = world.0[start.1][start.0];
         if start_char == 'S' {
             start_char = 'a'

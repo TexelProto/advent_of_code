@@ -1,8 +1,4 @@
-use std::{
-    cmp::Reverse,
-    collections::{BinaryHeap, HashSet},
-    fmt::Debug,
-};
+use std::{cmp::Reverse, collections::HashSet, fmt::Debug};
 
 use super::*;
 use thiserror::Error;
@@ -56,10 +52,6 @@ impl<'a, W: World<'a>, S: Score> Eq for PartialPath<'a, W, S> {}
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error("Start point was outside of world")]
-    StartOutOfRange,
-    #[error("End point was outside of world")]
-    EndOutOfRange,
     #[error("No path is possible")]
     NoPossiblePath,
 }
@@ -73,23 +65,26 @@ where
 {
     type Error = Error;
 
-    fn get_path(
+    fn try_get_path(
         &self,
         world: &'a W,
         agent: &A,
         start: W::Index,
         target: W::Index,
+        max_steps: Option<u32>,
     ) -> Result<Path<'a, W>, Self::Error> {
-        let mut paths = BinaryHeap::new();
+        let mut paths = Vec::new();
         let mut visited = HashSet::new();
         visited.insert(start.clone());
 
         paths.push(Reverse(PartialPath {
             world,
             positions: vec![start.clone()],
-            start_distance: A::Score::default(),
+            start_distance: A::Cost::default(),
         }));
-        loop {
+        let mut step = 0;
+        while Some(step) != max_steps {
+            step += 1;
             let shortest = paths.pop().ok_or(Error::NoPossiblePath)?;
             let shortest = shortest.0;
 
@@ -109,17 +104,20 @@ where
                 path.append(neighbor.clone(), dist);
 
                 if neighbor == target {
-                    let path = super::Path {
+                    let path = Path {
                         world,
                         positions: path.positions,
                     };
                     return Ok(path);
                 }
 
-                paths.push(Reverse(path));
-
+                let insert = Reverse(path);
+                let index = paths.binary_search(&insert).unwrap_or_else(|i| i);
+                paths.insert(index, insert);
                 visited.insert(neighbor);
             }
         }
+
+        Err(Error::NoPossiblePath)
     }
 }

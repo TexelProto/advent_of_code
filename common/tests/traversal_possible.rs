@@ -33,13 +33,13 @@ impl World<'_> for Map {
 struct TestAgent;
 
 impl Agent<'_, Map> for TestAgent {
-    type Score = NonNanF32;
+    type Cost = NonNanF32;
     fn get_cost(
         &self,
         world: &Map,
         _start: &<Map as World>::Index,
         destination: &<Map as World>::Index,
-    ) -> Option<Self::Score> {
+    ) -> Option<Self::Cost> {
         if world.0[destination.0][destination.1] == 0 {
             Some(NonNanF32::try_from(1.0).unwrap())
         } else {
